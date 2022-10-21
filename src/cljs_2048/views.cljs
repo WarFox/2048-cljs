@@ -73,6 +73,7 @@
     [:div#game-panel
      (score-panel "Score" @score)
      (score-panel "High Score" @high-score)
+     [:button {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
      [:br.clear]
      (board-panel)]))
 

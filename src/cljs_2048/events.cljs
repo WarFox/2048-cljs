@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [cljs-2048.db :as db]
+   [cljs-2048.board :as board]
    [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
 (re-frame/reg-event-db
@@ -18,4 +19,5 @@
  ::start-game
  (fn-traced [db [_ _]]
             (-> db
-                (assoc :started true))))
+                (assoc :board (board/with-two-random-cells))
+                (assoc :score 0))))
