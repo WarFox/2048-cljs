@@ -10,14 +10,18 @@
   []
   (re-frame/dispatch
    [::rp/set-keydown-rules
-    {:event-keys [[[::events/set-re-pressed-example "Hello, world!"]
-                   [{:keyCode 72} ;; h
-                    {:keyCode 69} ;; e
-                    {:keyCode 76} ;; l
-                    {:keyCode 76} ;; l
-                    {:keyCode 79} ;; o
-                    ]]]
+    {:event-keys [[[::events/move-left]
+                   [{:keyCode 37}]] ;; lef-arrow
 
+                  [[::events/move-up]
+                   [{:keyCode 38}]] ;; up-arrow
+
+                  [[::events/move-right]
+                   [{:keyCode 39}]] ;; lef-arrow
+
+                  [[::events/move-down]
+                   [{:keyCode 40}]] ;; down-arrow
+                  ]
      :clear-keys
      [[{:keyCode 27} ;; escape
        ]]}]))

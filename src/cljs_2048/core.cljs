@@ -21,5 +21,6 @@
   (re-frame/dispatch-sync [::events/initialize-db])
   (re-frame/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
   (re-frame/dispatch-sync [::events/start-game])
+  (views/dispatch-keydown-rules)
   (dev-setup)
   (mount-root))

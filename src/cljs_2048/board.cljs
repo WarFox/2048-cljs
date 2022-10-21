@@ -33,3 +33,19 @@
   (-> initial-board
       (random-cell)
       (random-cell)))
+
+(defn move-up
+  [board]
+  board)
+
+(defn move-down
+  [board]
+  board)
+
+(defn move-right
+  [board]
+  board)
+
+(defn move-left
+  [board]
+  board)

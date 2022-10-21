@@ -7,8 +7,9 @@
 
 (re-frame/reg-event-db
  ::initialize-db
- (fn-traced [_ _]
-            db/default-db))
+ (fn-traced
+  [_ _]
+  db/default-db))
 
 (re-frame/reg-event-db
  ::set-re-pressed-example
@@ -17,7 +18,36 @@
 
 (re-frame/reg-event-db
  ::start-game
- (fn-traced [db [_ _]]
-            (-> db
-                (assoc :board (board/with-two-random-cells))
-                (assoc :score 0))))
+ (fn-traced
+  [db [_ _]]
+  (-> db
+      (assoc :board (board/with-two-random-cells))
+      (assoc :score 0))))
+
+(re-frame/reg-event-db
+ ::move-up
+ (fn-traced
+  [db [_ _]]
+  (-> db
+      (assoc :board (board/move-up (:board db))))))
+
+(re-frame/reg-event-db
+ ::move-down
+ (fn-traced
+  [db [_ _]]
+  (-> db
+      (assoc :board (board/move-down (:board db))))))
+
+(re-frame/reg-event-db
+ ::move-right
+ (fn-traced
+  [db [_ _]]
+  (-> db
+      (assoc :board (board/move-right (:board db))))))
+
+(re-frame/reg-event-db
+ ::move-left
+ (fn-traced
+  [db [_ _]]
+  (-> db
+      (assoc :board (board/move-left (:board db))))))
