@@ -5,9 +5,7 @@
    [re-pressed.core :as rp]
    [cljs-2048.events :as events]
    [cljs-2048.views :as views]
-   [cljs-2048.config :as config]
-   ))
-
+   [cljs-2048.config :as config]))
 
 (defn dev-setup []
   (when config/debug?
@@ -22,5 +20,6 @@
 (defn init []
   (re-frame/dispatch-sync [::events/initialize-db])
   (re-frame/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
+  (re-frame/dispatch-sync [::events/start-game])
   (dev-setup)
   (mount-root))
