@@ -21,7 +21,7 @@
   []
   {:clear :both})
 
-(defclass board-cell
+(defclass board-tile
   [bg-color]
   {:float            :left
    :width            :5rem

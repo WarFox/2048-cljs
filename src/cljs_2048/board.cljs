@@ -9,30 +9,34 @@
    [0 0 0 0]
    [0 0 0 0]])
 
-(defn set-cell
+(defn set-tile
   "Set value at given row and column of the board"
   [board r c value]
   (let [row (nth board r)
         row-updater (assoc row c value)]
     (assoc board r row-updater)))
 
-(defn get-cell
+(defn get-tile
   "Get the value from given row and column of the board"
   [board r c]
   (-> board
       (nth r)
       (nth c)))
 
-(defn random-cell
-  "Add 2 or 4 to random position of cell"
+(defn random-tile
+  "Add 2 or 4 to random empty position of tile"
   [board]
-  (set-cell board (rand-int rows) (rand-int columns) (rand-nth [2 4])))
+  (let [[r c] [(rand-int 4) (rand-int 4)]
+        value (get-tile board r c)]
+    (if (pos? value)
+      (recur board)
+      (set-tile board r c (rand-nth [2 4])))))
 
-(defn with-two-random-cells
+(defn with-two-random-tiles
   []
   (-> initial-board
-      (random-cell)
-      (random-cell)))
+      (random-tile)
+      (random-tile)))
 
 (defn move-up
   [board]

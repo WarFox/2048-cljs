@@ -21,7 +21,7 @@
  (fn-traced
   [db [_ _]]
   (-> db
-      (assoc :board (board/with-two-random-cells))
+      (assoc :board (board/with-two-random-tiles))
       (assoc :score 0))))
 
 (re-frame/reg-event-db

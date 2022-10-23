@@ -26,9 +26,10 @@
      [[{:keyCode 27} ;; escape
        ]]}]))
 
-;; Displaying the game cell
-(defn cellcolors [cellvalue]
-  (case cellvalue
+;; Displaying the game tile
+(defn tile-colors
+  [value]
+  (case value
     0         "#BBBBBB"
     2         "#7fbfc7"
     4         "#82b4c2"
@@ -45,33 +46,36 @@
     8192      "#a74086"
     "default" "#aa3581"))
 
-(defn cell-panel [index x]
+(defn tile-panel
+  [index value]
   ^{:key index}
-  [:div {:class (styles/board-cell (cellcolors x))}
-   (if (= x 0) "" x)])
+  [:div {:class (styles/board-tile (tile-colors value))}
+   (if (zero? value) "" value)])
 
 ;; Panel used to show Score and Best score
-(defn score-panel [header value]
+(defn score-panel
+  [header value]
   [:div.score
-   [:h3 header]
-   [:p value]])
+   [:h3 header ": " value]])
 
-;; Displaying the game board with the cells in it
-(defn board-panel []
+(defn board-panel
+  "Rows and columns display of current board"
+  []
   (let [board (re-frame/subscribe [::subs/board])] ;; Get the current state of the board
     [:div {:class (styles/board)}
      ;; (cljs.pprint/pprint board) ; debugging to console.log the board data
      (map-indexed ;; Each row of the board
-      (fn [index x]
+      (fn [index value]
         ^{:key index}
         [:div {:class (styles/board-row)}
-         (map-indexed ;; Each cell of the row
-          cell-panel
-          x)])
+         (map-indexed ;; Each tile of the row
+          tile-panel
+          value)])
       @board)
      [:br.clear]]))
 
-(defn display-game []
+(defn display-game
+  []
   (let [score (re-frame/subscribe [::subs/score])
         high-score (re-frame/subscribe [::subs/high-score])]
     [:div#game-panel
@@ -81,7 +85,8 @@
      [:br.clear]
      (board-panel)]))
 
-(defn main-panel []
+(defn main-panel
+  []
   (let [name (re-frame/subscribe [::subs/name])]
     [:div
      [:h1 @name]
