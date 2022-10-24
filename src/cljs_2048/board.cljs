@@ -1,7 +1,8 @@
 (ns cljs-2048.board)
 
-(def rows 4)
-(def columns 4)
+(def rows-count 4)
+(def columns-count 4)
+(def random-fill #(rand-nth [2 2 2 4])) ;; Favor 2 for random filling
 
 (def initial-board
   [[0 0 0 0]
@@ -26,11 +27,11 @@
 (defn random-tile
   "Add 2 or 4 to random empty position of tile"
   [board]
-  (let [[r c] [(rand-int 4) (rand-int 4)]
+  (let [[r c] [(rand-int rows-count) (rand-int columns-count)]
         value (get-tile board r c)]
     (if (pos? value)
       (recur board)
-      (set-tile board r c (rand-nth [2 4])))))
+      (set-tile board r c (random-fill)))))
 
 (defn with-two-random-tiles
   []
@@ -41,8 +42,7 @@
 (defn transpose
   "Rows become columns and columns become rows
    https://stackoverflow.com/a/16302220/598444
-   https://stackoverflow.com/a/10347404/598444
-  "
+   https://stackoverflow.com/a/10347404/598444"
   [board]
   (apply mapv vector board))
 
@@ -65,20 +65,26 @@
        (recur remaining acc (conj zeros 0))
        (recur remaining (conj acc head) zeros)))))
 
-(defn compress-left
+(defn stack-left
   [board]
   (map move-tiles-left board))
 
+(defn combine
+  [[first second & rest]]
+  (let [c (into [(+ first second)] rest)]
+    (into c (repeat  (- columns-count (count c)) 0))))
+
 (defn move-left
   [board]
-  (-> board
-      compress-left))
+  (->> board
+      (stack-left)
+      (map combine)))
 
 (defn move-right
   [board]
   (->> board
        (map reverse)
-       move-left
+       (move-left)
        (map reverse)))
 
 (defn move-up
@@ -94,4 +100,3 @@
       (rotate-right)
       (move-left)
       (rotate-left)))
-

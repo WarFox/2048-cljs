@@ -1,8 +1,6 @@
 (ns cljs-2048.board-test
   (:require [cljs-2048.board :as sut]
-            [cljs.test :as t]
-            [cljs.test :refer-macros [deftest testing is]]
-            [clojure.set :as set]))
+            [cljs.test :refer-macros [deftest testing is]]))
 
 (deftest initial-board-test
   (testing "Initial board must be 4x4"
@@ -29,9 +27,9 @@
     (testing "Get tile value of given x and y"
       (is (= (sut/get-tile board 1 3) 8)))))
 
-(deftest compress-left
+(deftest stack-left
   (testing "Move all tiles to left - single column"
-    (is (= (sut/compress-left
+    (is (= (sut/stack-left
             [[0 2 4 6]
              [0 4 6 8]
              [0 6 8 10]
@@ -42,7 +40,7 @@
             [8 10 12 0]])))
 
   (testing "Move all tiles to left - two columns"
-    (is (= (sut/compress-left
+    (is (= (sut/stack-left
             [[0 0 4 6]
              [0 0 6 8]
              [0 0 8 10]
@@ -53,7 +51,7 @@
             [10 12 0 0]])))
 
   (testing "Move all tiles to left - mixed column"
-    (is (= (sut/compress-left
+    (is (= (sut/stack-left
             [[0 2 0 6]
              [0 4 0 8]
              [0 6 0 10]
@@ -63,32 +61,39 @@
             [6 10 0 0]
             [8 12 0 0]]))))
 
+(deftest combine-test
+  (is (= (sut/combine [2 2 0 0])
+         [4 0 0 0]))
+
+  (is (= (sut/combine [4 4 2 2])
+         [8 2 2 0])))
+
 (deftest move-tiles-left
-  (testing "Compress array to left - three"
+  (testing "Stack array to left - three"
     (is (= (sut/move-tiles-left [0 2 4 6])
            [2 4 6 0])))
 
-  (testing "Compress array to left - two"
+  (testing "Stack array to left - two"
     (is (= (sut/move-tiles-left [0 0 4 6])
            [4 6 0 0])))
 
-  (testing "Compress array to left - single "
+  (testing "Stack array to left - single "
     (is (= (sut/move-tiles-left [0 0 0 6])
            [6 0 0 0])))
 
-  (testing "Compress array to left - all zeros"
+  (testing "Stack array to left - all zeros"
     (is (= (sut/move-tiles-left [0 0 0 0])
            [0 0 0 0])))
 
-  (testing "Compress array to left - all numbers"
+  (testing "Stack array to left - all numbers"
     (is (= (sut/move-tiles-left [2 4 6 8])
            [2 4 6 8])))
 
-  (testing "Compress array to left - zero in the middle"
+  (testing "Stack array to left - zero in the middle"
     (is (= (sut/move-tiles-left [2 4 0 8])
            [2 4 8 0])))
 
-  (testing "Compress array to left - zeros in the middle"
+  (testing "Stack array to left - zeros in the middle"
     (is (= (sut/move-tiles-left [2 0 0 8])
            [2 8 0 0]))))
 
@@ -99,11 +104,19 @@
    [13 14 15 16]])
 
 (deftest transpose-test
-  (is (= (sut/transpose test-board)
-         [[1 5 9  13]
-          [2 6 10 14]
-          [3 7 11 15]
-          [4 8 12 16]])))
+  (testing "flips the matrix diagonally so as row and column indices are switched"
+    (is (= (sut/transpose test-board)
+           [[1 5 9  13]
+            [2 6 10 14]
+            [3 7 11 15]
+            [4 8 12 16]]))))
+
+(deftest reverse-test
+  (is (= (reverse test-board)
+         [[13 14 15 16]
+          [9 10 11 12]
+          [5 6 7 8]
+          [1 2 3 4]])))
 
 (deftest rotate-left-test
   (is (= (sut/rotate-left test-board)

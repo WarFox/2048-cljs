@@ -23,26 +23,22 @@
  ::move-up
  (fn-traced
   [db [_ _]]
-  (-> db
-      (assoc :board (board/move-up (:board db))))))
+  (assoc db :board (board/move-up (:board db)))))
 
 (re-frame/reg-event-db
  ::move-down
  (fn-traced
   [db [_ _]]
-  (-> db
-      (assoc :board (board/move-down (:board db))))))
+  (assoc db :board (board/move-down (:board db)))))
 
 (re-frame/reg-event-db
  ::move-right
  (fn-traced
   [db [_ _]]
-  (-> db
-      (assoc :board (board/move-right (:board db))))))
+  (assoc db :board (board/move-right (:board db)))))
 
 (re-frame/reg-event-db
  ::move-left
  (fn-traced
   [db [_ _]]
-  (-> db
-      (assoc :board (board/move-left (:board db))))))
+  (assoc db :board (board/move-left (:board db)))))
