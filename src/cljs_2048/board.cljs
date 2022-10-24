@@ -38,18 +38,56 @@
       (random-tile)
       (random-tile)))
 
-(defn move-up
+(defn rotate-right
   [board]
-  board)
+  (apply map (fn [& more] (into [] more))
+         (reverse board)))
 
-(defn move-down
+(defn rotate-left
   [board]
-  board)
+  (-> board
+      (rotate-right)
+      (rotate-right)
+      (rotate-right)))
 
-(defn move-right
+(defn move-tiles-left
+  "Move the tiles to left, by shifting value cells to empty cell"
+  ([arr]
+   (move-tiles-left arr [] []))
+  ([[head & remaining] acc zeros]
+   (if (empty? remaining)
+     (into (conj acc head) zeros)
+     (if (zero? head)
+       (recur remaining acc (conj zeros 0))
+       (recur remaining (conj acc head) zeros)))))
+
+(defn compress-left
   [board]
-  board)
+  (map move-tiles-left board))
 
 (defn move-left
   [board]
-  board)
+  (-> board
+      compress-left))
+
+(defn move-right
+  [board]
+  (->> board
+       (map reverse)
+       move-left
+       (map reverse)))
+
+(defn move-up
+  [board]
+  (-> board
+      (rotate-left)
+      (move-left)
+      (rotate-right)))
+
+(defn move-down
+  [board]
+  (-> board
+      (rotate-right)
+      (move-left)
+      (rotate-left)))
+
