@@ -24,14 +24,21 @@
       (nth r)
       (nth c)))
 
-(defn random-tile
-  "Add 2 or 4 to random empty position of tile"
+(defn empty-tiles
+  "Returns list of [r c] where r is row and c is column index of tile with zero"
   [board]
-  (let [[r c] [(rand-int rows-count) (rand-int columns-count)]
-        value (get-tile board r c)]
-    (if (pos? value)
-      (recur board)
-      (set-tile board r c (random-fill)))))
+  (for [r     (range rows-count)
+        c     (range columns-count)
+        :when (zero? (get-tile board r c))]
+    [r c]))
+
+(defn random-tile
+  "Set 2 or 4 to random empty position of tile"
+  [board]
+  (if-let [tiles (seq (empty-tiles board))]
+    (let [[r c] (rand-nth tiles)]
+      (set-tile board r c (random-fill)))
+    board))
 
 (defn with-two-random-tiles
   []
@@ -72,17 +79,17 @@
 (defn combine
   [[first second & rest]]
   (let [c (into
-            (if (= first second)
-              [(+ first second)]
-              [first second])
-            rest)]
+           (if (= first second)
+             [(+ first second)]
+             [first second])
+           rest)]
     (into c (repeat (- columns-count (count c)) 0))))
 
 (defn move-left
   [board]
   (->> board
-      (stack-left)
-      (map combine)))
+       (stack-left)
+       (map combine)))
 
 (defn move-right
   [board]

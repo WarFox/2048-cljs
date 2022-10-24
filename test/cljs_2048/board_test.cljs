@@ -27,6 +27,22 @@
     (testing "Get tile value of given x and y"
       (is (= (sut/get-tile board 1 3) 8)))))
 
+(deftest empty-tiles
+  (is (= (sut/empty-tiles [[1 2 3 0]
+                           [0 6 7 0]
+                           [9 0 11 12]
+                           [13 0 15 16]])
+         [[0 3] [1 0] [1 3] [2 1] [3 1]])))
+
+(deftest random-tile-test
+  (testing "returns board if board is full"
+    (let [board [[1 2 3 4]
+                 [5 6 7 8]
+                 [5 6 7 8]
+                 [5 6 7 8]]]
+      (is (= (sut/random-tile board)
+             board)))))
+
 (deftest stack-left
   (testing "Move all tiles to left - single column"
     (is (= (sut/stack-left
@@ -199,8 +215,8 @@
           [0 0 0 0]])))
 
 (deftest move-down-and-combine
-   (is (= (sut/move-down test-board-3)
-          [[0 0 0 8]
-           [0 2 0 8]
-           [0 4 2 8]
-           [4 16 16 16]])))
+  (is (= (sut/move-down test-board-3)
+         [[0 0 0 8]
+          [0 2 0 8]
+          [0 4 2 8]
+          [4 16 16 16]])))
