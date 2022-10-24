@@ -66,7 +66,18 @@
          [4 0 0 0]))
 
   (is (= (sut/combine [4 4 2 2])
-         [8 2 2 0])))
+         [8 2 2 0]))
+
+  (testing "map combine for a matrix"
+    (is (= (map sut/combine
+                [[4 4 2 2]
+                 [6 4 2 2]
+                 [8 8 2 0]
+                 [6 8 2 2]])
+           [[8 2 2 0]
+            [6 4 2 2]
+            [16 2 0 0]
+            [6 8 2 2]]))))
 
 (deftest move-tiles-left
   (testing "Stack array to left - three"
@@ -159,3 +170,37 @@
 (deftest move-up-test
   (is (= (sut/move-up (sut/move-up test-board-2))
          test-board-2)))
+
+(def test-board-3
+  [[0 0 0 8]
+   [0 2 2 8]
+   [4 4 8 8]
+   [0 16 8 16]])
+
+(deftest move-left-and-combine
+  (is (= (sut/move-left test-board-3)
+         [[8 0 0 0]
+          [4 8 0 0]
+          [8 8 8 0]
+          [16 8 16 0]])))
+
+(deftest move-right-and-combine
+  (is (= (sut/move-right test-board-3)
+         [[0 0 0 8]
+          [0 2 2 8]
+          [0 4 4 16]
+          [0 16 8 16]])))
+
+(deftest move-up-and-combine
+  (is (= (sut/move-up test-board-3)
+         [[4 2 2 16]
+          [0 4 8 8]
+          [0 16 8 16]
+          [0 0 0 0]])))
+
+(deftest move-down-and-combine
+   (is (= (sut/move-down test-board-3)
+          [[0 0 0 8]
+           [0 2 0 8]
+           [0 4 2 8]
+           [4 16 16 16]])))

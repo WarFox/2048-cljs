@@ -71,8 +71,12 @@
 
 (defn combine
   [[first second & rest]]
-  (let [c (into [(+ first second)] rest)]
-    (into c (repeat  (- columns-count (count c)) 0))))
+  (let [c (into
+            (if (= first second)
+              [(+ first second)]
+              [first second])
+            rest)]
+    (into c (repeat (- columns-count (count c)) 0))))
 
 (defn move-left
   [board]
