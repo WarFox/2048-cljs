@@ -55,7 +55,7 @@
   (transpose (map reverse board)))
 
 (defn move-tiles-left
-  "Move the tiles to left, by shifting value cells to empty cell"
+  "Move the tiles to left in array, by shifting value to empty tile"
   ([arr]
    (move-tiles-left arr [] []))
   ([[head & remaining] acc zeros]

@@ -118,3 +118,31 @@
           [14 10 6 2]
           [15 11 7 3]
           [16 12 8 4]])))
+
+(def test-board-2
+  [[1 2 3 4]
+   [0 6 7 8]
+   [0 0 11 12]
+   [0 0 0 16]])
+
+(deftest move-left-test
+  (is (= (sut/move-left test-board-2)
+         [[1 2 3 4]
+          [6 7 8 0]
+          [11 12 0 0]
+          [16 0 0 0]])))
+
+(deftest move-right-test
+  (is (= (sut/move-right (sut/move-left test-board-2))
+         test-board-2)))
+
+(deftest move-down-test
+  (is (= (sut/move-down test-board-2)
+         [[0 0 0 4]
+          [0 0 3 8]
+          [0 2 7 12]
+          [1 6 11 16]])))
+
+(deftest move-up-test
+  (is (= (sut/move-up (sut/move-up test-board-2))
+         test-board-2)))
