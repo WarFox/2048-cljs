@@ -38,17 +38,21 @@
       (random-tile)
       (random-tile)))
 
+(defn transpose
+  "Rows become columns and columns become rows
+   https://stackoverflow.com/a/16302220/598444
+   https://stackoverflow.com/a/10347404/598444
+  "
+  [board]
+  (apply mapv vector board))
+
 (defn rotate-right
   [board]
-  (apply map (fn [& more] (into [] more))
-         (reverse board)))
+  (transpose (reverse board)))
 
 (defn rotate-left
   [board]
-  (-> board
-      (rotate-right)
-      (rotate-right)
-      (rotate-right)))
+  (transpose (map reverse board)))
 
 (defn move-tiles-left
   "Move the tiles to left, by shifting value cells to empty cell"

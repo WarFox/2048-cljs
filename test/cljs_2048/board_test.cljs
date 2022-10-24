@@ -92,39 +92,29 @@
     (is (= (sut/move-tiles-left [2 0 0 8])
            [2 8 0 0]))))
 
+(def test-board
+  [[1 2 3 4]
+   [5 6 7 8]
+   [9 10 11 12]
+   [13 14 15 16]])
+
+(deftest transpose-test
+  (is (= (sut/transpose test-board)
+         [[1 5 9  13]
+          [2 6 10 14]
+          [3 7 11 15]
+          [4 8 12 16]])))
+
 (deftest rotate-left-test
-  (testing "rotate left"
-    (is (= (sut/rotate-left
-            [[0 0 0 0]
-             [0 4 2 16]
-             [0 2 4 8]
-             [0 64 128 256]])
-           [[0 16 8 256]
-            [0 2 4 128]
-            [0 4 2 64]
-            [0 0 0 0]]))))
+  (is (= (sut/rotate-left test-board)
+         [[4 8 12 16]
+          [3 7 11 15]
+          [2 6 10 14]
+          [1 5 9 13]])))
 
 (deftest rotate-right-test
-  (testing "rotate right"
-    (is (= (sut/rotate-right
-            [[0 0 0 0]
-             [0 4 2 16]
-             [0 2 4 8]
-             [0 64 128 256]])
-           [[0 0 0 0]
-            [64 2 4 0]
-            [128 4 2 0]
-            [256 8 16 0]]))))
-
-
-(def test-board
-  [[0 0 0 0]
-   [0 4 2 16]
-   [0 2 4 8]
-   [0 64 128 256]])
-
-(reverse test-board)
-
-;; https://techvidvan.com/tutorials/python-2048-game-project-with-source-code/
-
-;; (apply map #(into [] %&) board)
+  (is (= (sut/rotate-right test-board)
+         [[13 9 5 1]
+          [14 10 6 2]
+          [15 11 7 3]
+          [16 12 8 4]])))
