@@ -61,15 +61,20 @@
   [board]
   (transpose (map rseq board)))
 
+(defn fill-zeros
+  "If array length is less than n, fill the remaining slots with 0"
+  [arr n]
+  (into arr (repeat (- n (count arr)) 0)))
+
 (defn combine
-  "Add first and second tile if they are equal"
-  [[first second & rest]]
-  (let [c (into
-           (if (= first second)
-             [(+ first second)]
-             [first second])
-           rest)]
-    (into c (repeat (- columns-count (count c)) 0))))
+  [arr]
+  (loop [[head & remaining] arr
+         acc                []]
+    (if (empty? remaining)
+      (fill-zeros (conj acc (if head head 0)) 4)
+      (if (= head (first remaining))
+        (recur (rest remaining) (conj acc (+ head (first remaining))))
+        (recur remaining (conj acc head))))))
 
 (defn reverse-board
   "Reverse the board"
