@@ -43,6 +43,59 @@
       (is (= (sut/random-tile board)
              board)))))
 
+(def test-board
+  [[1 2 3 4]
+   [5 6 7 8]
+   [9 10 11 12]
+   [13 14 15 16]])
+
+(deftest transpose-test
+  (testing "flips the matrix diagonally so as row and column indices are switched"
+    (is (= (sut/transpose test-board)
+           [[1 5 9  13]
+            [2 6 10 14]
+            [3 7 11 15]
+            [4 8 12 16]]))))
+
+(deftest rotate-left-test
+  (is (= (sut/rotate-left test-board)
+         [[4 8 12 16]
+          [3 7 11 15]
+          [2 6 10 14]
+          [1 5 9 13]])))
+
+(deftest rotate-right-test
+  (is (= (sut/rotate-right test-board)
+         [[13 9 5 1]
+          [14 10 6 2]
+          [15 11 7 3]
+          [16 12 8 4]])))
+
+(deftest combine-test
+  (is (= (sut/combine [2 2 0 0])
+         [4 0 0 0]))
+
+  (is (= (sut/combine [4 4 2 2])
+         [8 2 2 0]))
+
+  (testing "map combine for a matrix"
+    (is (= (map sut/combine
+                [[4 4 2 2]
+                 [6 4 2 2]
+                 [8 8 2 0]
+                 [6 8 2 2]])
+           [[8 2 2 0]
+            [6 4 2 2]
+            [16 2 0 0]
+            [6 8 2 2]]))))
+
+(deftest reverse-test
+  (is (= (sut/reverse-board test-board)
+         [[4 3 2 1]
+          [8 7 6 5]
+          [12 11 10 9]
+          [16 15 14 13]])))
+
 (deftest stack-left
   (testing "Move all tiles to left - single column"
     (is (= (sut/stack-left
@@ -77,24 +130,6 @@
             [6 10 0 0]
             [8 12 0 0]]))))
 
-(deftest combine-test
-  (is (= (sut/combine [2 2 0 0])
-         [4 0 0 0]))
-
-  (is (= (sut/combine [4 4 2 2])
-         [8 2 2 0]))
-
-  (testing "map combine for a matrix"
-    (is (= (map sut/combine
-                [[4 4 2 2]
-                 [6 4 2 2]
-                 [8 8 2 0]
-                 [6 8 2 2]])
-           [[8 2 2 0]
-            [6 4 2 2]
-            [16 2 0 0]
-            [6 8 2 2]]))))
-
 (deftest move-tiles-left
   (testing "Stack array to left - three"
     (is (= (sut/move-tiles-left [0 2 4 6])
@@ -123,41 +158,6 @@
   (testing "Stack array to left - zeros in the middle"
     (is (= (sut/move-tiles-left [2 0 0 8])
            [2 8 0 0]))))
-
-(def test-board
-  [[1 2 3 4]
-   [5 6 7 8]
-   [9 10 11 12]
-   [13 14 15 16]])
-
-(deftest transpose-test
-  (testing "flips the matrix diagonally so as row and column indices are switched"
-    (is (= (sut/transpose test-board)
-           [[1 5 9  13]
-            [2 6 10 14]
-            [3 7 11 15]
-            [4 8 12 16]]))))
-
-(deftest reverse-test
-  (is (= (reverse test-board)
-         [[13 14 15 16]
-          [9 10 11 12]
-          [5 6 7 8]
-          [1 2 3 4]])))
-
-(deftest rotate-left-test
-  (is (= (sut/rotate-left test-board)
-         [[4 8 12 16]
-          [3 7 11 15]
-          [2 6 10 14]
-          [1 5 9 13]])))
-
-(deftest rotate-right-test
-  (is (= (sut/rotate-right test-board)
-         [[13 9 5 1]
-          [14 10 6 2]
-          [15 11 7 3]
-          [16 12 8 4]])))
 
 (def test-board-2
   [[1 2 3 4]

@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [cljs-2048.db :as db]
-   [cljs-2048.board :as board]
+   [cljs-2048.board :as b]
    [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
 (re-frame/reg-event-db
@@ -16,29 +16,29 @@
  (fn-traced
   [db [_ _]]
   (-> db
-      (assoc :board (board/with-two-random-tiles))
+      (assoc :board (b/with-two-random-tiles))
       (assoc :score 0))))
 
 (re-frame/reg-event-db
  ::move-up
  (fn-traced
   [db [_ _]]
-  (assoc db :board (board/move-up (:board db)))))
+  (assoc db :board (b/new-board (:board db) ::b/up))))
 
 (re-frame/reg-event-db
  ::move-down
  (fn-traced
   [db [_ _]]
-  (assoc db :board (board/move-down (:board db)))))
+  (assoc db :board (b/new-board (:board db) ::b/down))))
 
 (re-frame/reg-event-db
  ::move-right
  (fn-traced
   [db [_ _]]
-  (assoc db :board (board/move-right (:board db)))))
+  (assoc db :board (b/new-board (:board db) ::b/right))))
 
 (re-frame/reg-event-db
  ::move-left
  (fn-traced
   [db [_ _]]
-  (assoc db :board (board/move-left (:board db)))))
+  (assoc db :board (b/new-board (:board db) ::b/left))))

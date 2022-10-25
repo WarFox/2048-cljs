@@ -14,8 +14,8 @@
   "Set value at given row and column of the board"
   [board r c value]
   (let [row (nth board r)
-        row-updater (assoc row c value)]
-    (assoc board r row-updater)))
+        updated (assoc row c value)]
+    (assoc board r updated)))
 
 (defn get-tile
   "Get the value from given row and column of the board"
@@ -55,11 +55,26 @@
 
 (defn rotate-right
   [board]
-  (transpose (reverse board)))
+  (transpose (rseq board)))
 
 (defn rotate-left
   [board]
-  (transpose (map reverse board)))
+  (transpose (map rseq board)))
+
+(defn combine
+  "Add first and second tile if they are equal"
+  [[first second & rest]]
+  (let [c (into
+           (if (= first second)
+             [(+ first second)]
+             [first second])
+           rest)]
+    (into c (repeat (- columns-count (count c)) 0))))
+
+(defn reverse-board
+  "Reverse the board"
+  [board]
+  (mapv #(vec (rseq %)) board))
 
 (defn move-tiles-left
   "Move the tiles to left in array, by shifting value to empty tile"
@@ -76,29 +91,23 @@
   [board]
   (map move-tiles-left board))
 
-(defn combine
-  [[first second & rest]]
-  (let [c (into
-           (if (= first second)
-             [(+ first second)]
-             [first second])
-           rest)]
-    (into c (repeat (- columns-count (count c)) 0))))
-
 (defn move-left
+  "Move tiles to left and combine equal tiles at edge"
   [board]
   (->> board
        (stack-left)
-       (map combine)))
+       (mapv combine)))
 
 (defn move-right
+  "Move tiles to right and combine equal tiles at edge"
   [board]
   (->> board
-       (map reverse)
+       (reverse-board)
        (move-left)
-       (map reverse)))
+       (reverse-board)))
 
 (defn move-up
+  "Move tiles to up and combine equal tiles at edge"
   [board]
   (-> board
       (rotate-left)
@@ -106,8 +115,19 @@
       (rotate-right)))
 
 (defn move-down
+  "Move tiles to down and combine equal tiles at edge"
   [board]
   (-> board
       (rotate-right)
       (move-left)
       (rotate-left)))
+
+(defn new-board
+  "Make new board based on the direction"
+  [board direction]
+  (let [f (condp = direction
+            ::left  move-left
+            ::right move-right
+            ::up    move-up
+            ::down  move-down)]
+    (-> (f board)  random-tile)))
