@@ -243,9 +243,14 @@
              (sut/move-down test-board-3)))))
 
   (testing "add random tile only when board has changed"
-    (let [board [[2 0 0 0]
-                 [2 0 0 0]
-                 [4 0 0 0]
-                 [4 0 0 0]]]
-      (is (= (sut/new-board board ::sut/left)
-             board)))))
+    (with-redefs [sut/random-tile (fn [_] ::random-tile-added)]
+      (let [board [[2 0 0 0]
+                   [2 0 0 0]
+                   [4 0 0 0]
+                   [4 0 0 0]]]
+        (is (= (sut/new-board board ::sut/left)
+               board))
+
+        (testing "random tile is added"
+          (is (= (sut/new-board board ::sut/up)
+                 ::random-tile-added)))))))

@@ -127,15 +127,15 @@
       (move-left)
       (rotate-left)))
 
+(def movements {::left  move-left
+                ::right move-right
+                ::up    move-up
+                ::down  move-down})
+
 (defn new-board
-  "Make new board based on the direction"
+  "Make new board based on the direction. Adds random tile if board has changed"
   [board direction]
-  (let [f (condp = direction
-            ::left  move-left
-            ::right move-right
-            ::up    move-up
-            ::down  move-down)
-        new-board (f board)]
+  (let [new-board ((direction movements) board)]
     (if (= new-board board)
       new-board
       (random-tile new-board))))
