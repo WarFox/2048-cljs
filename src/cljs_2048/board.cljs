@@ -134,5 +134,8 @@
             ::left  move-left
             ::right move-right
             ::up    move-up
-            ::down  move-down)]
-    (-> (f board)  random-tile)))
+            ::down  move-down)
+        new-board (f board)]
+    (if (= new-board board)
+      new-board
+      (random-tile new-board))))
