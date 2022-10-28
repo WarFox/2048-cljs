@@ -21,3 +21,8 @@
  ::high-score
  (fn [db _]
    (:high-score db)))
+
+(re-frame/reg-sub
+ ::gameover
+ (fn [db _]
+   (:gameover db)))

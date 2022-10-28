@@ -74,13 +74,19 @@
       @board)
      [:br.clear]]))
 
+(defn gameover-panel []
+  [:div
+   "Game Over"])
+
 (defn display-game
   []
   (let [score (re-frame/subscribe [::subs/score])
-        high-score (re-frame/subscribe [::subs/high-score])]
+        high-score (re-frame/subscribe [::subs/high-score])
+        gameover (re-frame/subscribe [::subs/gameover])]
     [:div#game-panel
      (score-panel "Score" @score)
      (score-panel "High Score" @high-score)
+     (if @gameover (gameover-panel))
      [:button {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
      [:br.clear]
      (board-panel)]))

@@ -132,8 +132,8 @@
                 ::up    move-up
                 ::down  move-down})
 
-(defn new-board
-  "Make new board based on the direction. Adds random tile if board has changed"
+(defn move
+  "Returns new board after moving in the direction. Adds random tile if board has changed"
   [board direction]
   (let [new-board ((direction movements) board)]
     (if (= new-board board)

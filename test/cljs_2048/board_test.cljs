@@ -227,19 +227,19 @@
           [0 4 2 16]
           [4 16 16 16]])))
 
-(deftest new-board-test
+(deftest move-test
   (testing "direction works!"
     (with-redefs [sut/random-tile identity]
-      (is (= (sut/new-board test-board-3 ::sut/left)
+      (is (= (sut/move test-board-3 ::sut/left)
              (sut/move-left test-board-3)))
 
-      (is (= (sut/new-board test-board-3 ::sut/right)
+      (is (= (sut/move test-board-3 ::sut/right)
              (sut/move-right test-board-3)))
 
-      (is (= (sut/new-board test-board-3 ::sut/up)
+      (is (= (sut/move test-board-3 ::sut/up)
              (sut/move-up test-board-3)))
 
-      (is (= (sut/new-board test-board-3 ::sut/down)
+      (is (= (sut/move test-board-3 ::sut/down)
              (sut/move-down test-board-3)))))
 
   (testing "add random tile only when board has changed"
@@ -248,9 +248,9 @@
                    [2 0 0 0]
                    [4 0 0 0]
                    [4 0 0 0]]]
-        (is (= (sut/new-board board ::sut/left)
+        (is (= (sut/move board ::sut/left)
                board))
 
         (testing "random tile is added"
-          (is (= (sut/new-board board ::sut/up)
+          (is (= (sut/move board ::sut/up)
                  ::random-tile-added)))))))
