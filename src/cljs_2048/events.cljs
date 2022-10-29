@@ -7,18 +7,13 @@
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [re-frame.core :as re-frame]))
 
-(defn check-gameover
-  [new-board old-board]
-  (when (game/gameover? new-board old-board)
-    (re-frame/dispatch [::game-events/gameover]))
-  new-board)
-
 (defn- move
   "Move board and check gameover"
   [board direction]
-  (-> board
-      (board/move direction)
-      (check-gameover board)))
+  (let [new-board (board/move board direction)]
+    (when (game/gameover? new-board)
+      (re-frame/dispatch [::game-events/gameover]))
+    new-board))
 
 (re-frame/reg-event-db
  ::initialize-db

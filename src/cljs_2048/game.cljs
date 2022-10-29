@@ -4,16 +4,11 @@
    [re-frame.core :as re-frame]))
 
 (defn gameover?
-  "Returns true if game over, otherwise false"
-  [new-board old-board]
-  (and (empty? (board/empty-tiles old-board))
-       (= old-board new-board)))
+  "Returns true if game over, otherwise false.
+   If move left is possible, then move right is also possible
+   If move up is possible, then move down is also possible"
+  [board]
+  (and
+   (-> board board/move-left board/empty-tiles empty?)
+   (-> board board/move-up board/empty-tiles empty?)))
 
-(defn move
-  "Make new board based on the direction. Adds random tile if board has changed"
-  [board direction]
-  (let [moved-board ((direction board/movements) board)
-        new-board (if (= moved-board board)
-                    moved-board
-                    (board/random-tile moved-board))]
-    new-board))
