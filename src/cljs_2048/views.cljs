@@ -1,10 +1,10 @@
 (ns cljs-2048.views
   (:require
-   [re-frame.core :as re-frame]
-   [re-pressed.core :as rp]
    [cljs-2048.events :as events]
    [cljs-2048.styles :as styles]
-   [cljs-2048.subs :as subs]))
+   [cljs-2048.subs :as subs]
+   [re-frame.core :as re-frame]
+   [re-pressed.core :as rp]))
 
 (defn dispatch-keydown-rules
   []
@@ -86,7 +86,8 @@
     [:div#game-panel
      (score-panel "Score" @score)
      (score-panel "High Score" @high-score)
-     (if @gameover (gameover-panel))
+     (when @gameover
+       (gameover-panel))
      [:button {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
      [:br.clear]
      (board-panel)]))

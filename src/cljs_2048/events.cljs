@@ -1,15 +1,16 @@
 (ns cljs-2048.events
   (:require
-   [re-frame.core :as re-frame]
-   [cljs-2048.db :as db]
    [cljs-2048.board :as board]
+   [cljs-2048.db :as db]
    [cljs-2048.game :as game]
-   [day8.re-frame.tracing :refer-macros [fn-traced]]))
+   [cljs-2048.game-events :as game-events]
+   [day8.re-frame.tracing :refer-macros [fn-traced]]
+   [re-frame.core :as re-frame]))
 
 (defn check-gameover
   [new-board old-board]
   (when (game/gameover? new-board old-board)
-    (re-frame/dispatch [::gameover]))
+    (re-frame/dispatch [::game-events/gameover]))
   new-board)
 
 (defn- move
@@ -57,9 +58,3 @@
  (fn-traced
   [db [_ _]]
   (assoc db :board (move (:board db) ::board/left))))
-
-(re-frame/reg-event-db
- ::gameover
- (fn-traced
-  [db [_]]
-  (assoc db :gameover true)))

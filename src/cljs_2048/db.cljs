@@ -1,5 +1,6 @@
 (ns cljs-2048.db
-  (:require [cljs-2048.board :as board]))
+  (:require
+   [cljs-2048.board :as board]))
 
 (def default-db
   {:name "2048"

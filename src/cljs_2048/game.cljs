@@ -1,6 +1,7 @@
 (ns cljs-2048.game
-  (:require [re-frame.core :as re-frame]
-            [cljs-2048.board :as board]))
+  (:require
+   [cljs-2048.board :as board]
+   [re-frame.core :as re-frame]))
 
 (defn gameover?
   "Returns true if game over, otherwise false"

@@ -1,11 +1,11 @@
 (ns cljs-2048.core
   (:require
-   [reagent.dom :as rdom]
-   [re-frame.core :as re-frame]
-   [re-pressed.core :as rp]
+   [cljs-2048.config :as config]
    [cljs-2048.events :as events]
    [cljs-2048.views :as views]
-   [cljs-2048.config :as config]))
+   [re-frame.core :as re-frame]
+   [re-pressed.core :as rp]
+   [reagent.dom :as rdom]))
 
 (defn dev-setup
   []

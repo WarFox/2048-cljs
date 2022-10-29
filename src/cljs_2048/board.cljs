@@ -1,4 +1,7 @@
-(ns cljs-2048.board)
+(ns cljs-2048.board
+  (:require
+   [cljs-2048.game-events :as game-events]
+   [re-frame.core :as re-frame]))
 
 (def rows-count 4)
 (def columns-count 4)
@@ -78,7 +81,10 @@
     (if (empty? remaining)
       (fill-zeroes (conj acc (if head head 0)))
       (if (= head (first remaining))
-        (recur (rest remaining) (conj acc (+ head (first remaining))))
+        (let [sum (+ head (first remaining))]
+          (when (pos? sum)
+            (re-frame/dispatch [::game-events/add-score sum]))
+          (recur (rest remaining) (conj acc sum)))
         (recur remaining (conj acc head))))))
 
 (defn reverse-board
