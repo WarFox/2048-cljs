@@ -15,10 +15,10 @@
 /.shadow-cljs/
 
 # clj-kondo cache and configs from libs
-/.clj-kondo/*
+/.clj-kondo/
 
 # clj-kondo config
 !/.clj-kondo/config.edn
 
 # clojure-lsp cache
-/.lsp/.cache
+/.lsp/

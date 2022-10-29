@@ -61,17 +61,22 @@
   [board]
   (transpose (map rseq board)))
 
-(defn fill-zeros
-  "If array length is less than n, fill the remaining slots with 0"
-  [arr n]
-  (into arr (repeat (- n (count arr)) 0)))
+(defn fill-zeroes
+  "If vector v's length is less than n, fill the remaining slots with 0.
+   Otherwise returns the v. Default fill-count is columns-count."
+  ([v]
+   (fill-zeroes v columns-count))
+  ([v n]
+   (let [fill-count (- n (count v))]
+     (into v (repeat fill-count 0)))))
 
 (defn combine
-  [arr]
-  (loop [[head & remaining] arr
+  "Combines two equal tiles into one in the v and fills remaining with zeroes"
+  [v]
+  (loop [[head & remaining] v
          acc                []]
     (if (empty? remaining)
-      (fill-zeros (conj acc (if head head 0)) 4)
+      (fill-zeroes (conj acc (if head head 0)))
       (if (= head (first remaining))
         (recur (rest remaining) (conj acc (+ head (first remaining))))
         (recur remaining (conj acc head))))))
@@ -82,15 +87,10 @@
   (mapv #(vec (rseq %)) board))
 
 (defn move-tiles-left
-  "Move the tiles to left in array, by shifting value to empty tile"
-  ([arr]
-   (move-tiles-left arr [] []))
-  ([[head & remaining] acc zeros]
-   (if (empty? remaining)
-     (into (conj acc head) zeros)
-     (if (zero? head)
-       (recur remaining acc (conj zeros 0))
-       (recur remaining (conj acc head) zeros)))))
+  "Move the tiles to left in v, by shifting value to empty tile"
+  [v]
+  (-> (filterv pos? v)
+      (fill-zeroes)))
 
 (defn stack-left
   [board]

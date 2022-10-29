@@ -10,7 +10,7 @@
     (is (= (count (nth sut/initial-board 2)) 4))
     (is (= (count (nth sut/initial-board 3)) 4)))
 
-  (testing "Inital board must be filled with zeros"
+  (testing "Inital board must be filled with zeroes"
     (is (true? (every? zero? (nth sut/initial-board 0))))))
 
 (deftest set-tile
@@ -70,6 +70,27 @@
           [14 10 6 2]
           [15 11 7 3]
           [16 12 8 4]])))
+
+(deftest fill-zeroes-test
+  (testing "fills empty vector with n zeroes"
+    (is (= (sut/fill-zeroes [] 10)
+           [0 0 0 0 0 0 0 0 0 0])))
+
+  (testing "fills non-empty vector with no zeroes"
+    (is (= (sut/fill-zeroes [2 4] 7)
+           [2 4 0 0 0 0 0])))
+
+  (testing "if vector size is = n, return the vector"
+    (is (= (sut/fill-zeroes [2 4] 2)
+           [2 4])))
+
+  (testing "if vector size is > n, return the vector"
+    (is (= (sut/fill-zeroes [1 2 3 4] 2)
+           [1 2 3 4])))
+
+  (testing "default n is 4"
+    (is (= (sut/fill-zeroes [1 2])
+           [1 2 0 0]))))
 
 (deftest combine-test
   (is (= (sut/combine [2 2 0 0])
@@ -137,31 +158,31 @@
             [8 12 0 0]]))))
 
 (deftest move-tiles-left
-  (testing "Stack array to left - three"
+  (testing "Stack vector to left - three"
     (is (= (sut/move-tiles-left [0 2 4 6])
            [2 4 6 0])))
 
-  (testing "Stack array to left - two"
+  (testing "Stack vector to left - two"
     (is (= (sut/move-tiles-left [0 0 4 6])
            [4 6 0 0])))
 
-  (testing "Stack array to left - single "
+  (testing "Stack vector to left - single "
     (is (= (sut/move-tiles-left [0 0 0 6])
            [6 0 0 0])))
 
-  (testing "Stack array to left - all zeros"
+  (testing "Stack vector to left - all zeroes"
     (is (= (sut/move-tiles-left [0 0 0 0])
            [0 0 0 0])))
 
-  (testing "Stack array to left - all numbers"
+  (testing "Stack vector to left - all numbers"
     (is (= (sut/move-tiles-left [2 4 6 8])
            [2 4 6 8])))
 
-  (testing "Stack array to left - zero in the middle"
+  (testing "Stack vector to left - zero in the middle"
     (is (= (sut/move-tiles-left [2 4 0 8])
            [2 4 8 0])))
 
-  (testing "Stack array to left - zeros in the middle"
+  (testing "Stack vector to left - zeroes in the middle"
     (is (= (sut/move-tiles-left [2 0 0 8])
            [2 8 0 0]))))
 
