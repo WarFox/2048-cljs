@@ -25,10 +25,10 @@
  ::start-game
  (fn-traced
   [db [_ _]]
-  (-> db
-      (assoc :board (board/with-two-random-tiles))
-      (assoc :gameover false)
-      (assoc :score 0))))
+  (assoc db
+         :board (board/with-two-random-tiles)
+         :gameover false
+         :score 0)))
 
 (re-frame/reg-event-db
  ::move-up
