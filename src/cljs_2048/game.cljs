@@ -1,7 +1,18 @@
 (ns cljs-2048.game
   (:require
-   [cljs-2048.board :as board]
-   [re-frame.core :as re-frame]))
+   [cljs-2048.board :as board]))
+
+(defn can-move-sideways?
+  [v]
+  (->> (partition-by identity v)
+       (map count)
+       (some #(> % 1))))
+
+(defn can-move?
+  [board]
+  (or
+   (some can-move-sideways? board)
+   (some can-move-sideways? (board/transpose board))))
 
 (defn gameover?
   "Returns true if game over, otherwise false.
@@ -9,6 +20,5 @@
    If move up is possible, then move down is also possible"
   [board]
   (and
-   (-> board board/move-left board/empty-tiles empty?)
-   (-> board board/move-up board/empty-tiles empty?)))
-
+   (empty? (board/empty-tiles board))
+   (not (can-move? board))))

@@ -78,14 +78,18 @@
   [v]
   (loop [[head & remaining] v
          acc                []]
-    (if (empty? remaining)
-      (fill-zeroes (conj acc (if head head 0)))
-      (if (= head (first remaining))
-        (let [sum (+ head (first remaining))]
-          (when (pos? sum)
-            (re-frame/dispatch [::game-events/add-score sum]))
-          (recur (rest remaining) (conj acc sum)))
-        (recur remaining (conj acc head))))))
+    (cond
+      (empty? remaining)
+      (fill-zeroes (conj acc (if head head 0))) ;; head can be nil
+
+      (= head (first remaining))
+      (let [sum (* 2 head)]
+        (when (pos? sum)
+          (re-frame/dispatch [::game-events/add-score sum]))
+        (recur (rest remaining) (conj acc sum)))
+
+      :else
+      (recur remaining (conj acc head)))))
 
 (defn reverse-board
   "Reverse the board"
