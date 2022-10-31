@@ -1,4 +1,4 @@
-name: clj-kondo checks
+name: Lint
 
 on: [push]
 

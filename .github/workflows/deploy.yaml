@@ -1,0 +1,60 @@
+name: Deploy
+
+on: [push]
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    container: node:18.12.0
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@9.5
+        with:
+          cli: 1.11.1.1182
+
+      - name: Build
+        run: |
+          npm run release
+
+  DeployStaging:
+    name: Deploy to Staging
+    needs: [Build]
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Staging
+      url: 'https://staging.deepumohan.com/games/2048'
+
+    steps:
+      - name: Deploy
+        run: echo I am deploying!
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 sync ./resources/public/ s3://staging.deepumohan.com/games/2048/
+
+  DeployProd:
+    name: Deploy to Production
+    if: github.event.ref == 'refs/heads/main'
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+      url: 'https://deepumohan.com/games/2048'
+
+    steps:
+      - name: Deploy
+        run: echo I am deploying!
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 sync ./resources/public/ s3://deepumohan.com/games/2048/
