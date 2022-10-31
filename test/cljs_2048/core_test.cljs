@@ -1,6 +1,5 @@
 (ns cljs-2048.core-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
-            [cljs-2048.core :as core]))
+  (:require [cljs.test :refer-macros [deftest testing is]]))
 
 (deftest fake-test
   (testing "fake description"
