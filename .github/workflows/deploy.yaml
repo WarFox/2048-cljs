@@ -7,6 +7,8 @@ on:
 
 jobs:
   DeployStaging:
+    runs-on: ubuntu-latest
+
     name: Deploy to Staging
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
@@ -35,10 +37,11 @@ jobs:
           aws s3 sync ~/artefact/ s3://staging.deepumohan.com/games/2048/
 
   DeployProd:
+    runs-on: ubuntu-latest
+
     name: Deploy to Production
     if: github.event.ref == 'refs/heads/main'
     needs: [DeployStaging]
-    runs-on: ubuntu-latest
 
     environment:
       name: Production
