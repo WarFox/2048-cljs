@@ -37,6 +37,12 @@ jobs:
         run: |
           npm run release
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-artefact
+          path: ./resources/public/
+          retention-days: 1
+
   DeployStaging:
     name: Deploy to Staging
     needs: [Build]
@@ -47,6 +53,11 @@ jobs:
       url: 'https://staging.deepumohan.com/games/2048'
 
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-artefact
+          path: ~/artefact/
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -54,12 +65,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: eu-west-1
-          role-duration-seconds: 1200
+          role-duration-seconds: 900
           role-session-name: publish-to-s3-action
 
       - name: Copy files to the test website with the AWS CLI
         run: |
-          aws s3 sync ./resources/public/ s3://staging.deepumohan.com/games/2048/
+          aws s3 sync ~/artefact/ s3://staging.deepumohan.com/games/2048/
 
   DeployProd:
     name: Deploy to Production
@@ -72,6 +83,11 @@ jobs:
       url: 'https://deepumohan.com/games/2048'
 
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-artefact
+          path: ~/artefact/
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -79,9 +95,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: eu-west-1
-          role-duration-seconds: 1200
+          role-duration-seconds: 900
           role-session-name: publish-to-s3-action
 
       - name: Copy files to the test website with the AWS CLI
         run: |
-          aws s3 sync ./resources/public/ s3://deepumohan.com/games/2048/
+          aws s3 sync ~/artefact/ s3://deepumohan.com/games/2048/
