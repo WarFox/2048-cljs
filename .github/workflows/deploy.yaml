@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [Lint, Build]
+    types: [completed]
+
+jobs:
+  DeployStaging:
+    name: Deploy to Staging
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    environment:
+      name: Staging
+      url: 'https://staging.deepumohan.com/games/2048'
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-artefact
+          path: ~/artefact/
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: eu-west-1
+          role-duration-seconds: 900
+          role-session-name: publish-to-s3-action
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 sync ~/artefact/ s3://staging.deepumohan.com/games/2048/
+
+  DeployProd:
+    name: Deploy to Production
+    if: github.event.ref == 'refs/heads/main'
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+      url: 'https://deepumohan.com/games/2048'
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-artefact
+          path: ~/artefact/
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: eu-west-1
+          role-duration-seconds: 900
+          role-session-name: publish-to-s3-action
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 sync ~/artefact/ s3://deepumohan.com/games/2048/

@@ -1,0 +1,16 @@
+name: Lint
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Clojure Lint
+      uses: DeLaGuardo/clojure-lint-action@master
+      with:
+        clj-kondo-args: --parallel --lint src test
+        github_token: ${{ secrets.GITHUB_TOKEN }}

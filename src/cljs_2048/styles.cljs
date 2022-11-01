@@ -1,10 +1,6 @@
 (ns cljs-2048.styles
-  (:require-macros
-   [garden.def :refer [defcssfn]])
   (:require
-   [spade.core   :refer [defglobal defclass]]
-   [garden.units :refer [deg px]]
-   [garden.color :refer [rgba]]))
+   [spade.core :refer [defglobal defclass defkeyframes]]))
 
 (defglobal defaults
   [:body
@@ -12,10 +8,6 @@
     :font-family ["Lucida Console", :Monaco, :monospace]
     :color :#3A3A47
     :width :100%}])
-
-(defclass level1
-  []
-  {:color :green})
 
 (defclass board-row
   []
@@ -33,6 +25,14 @@
    :background-color bg-color
    :border-radius    :0.25rem
    :padding-top      :1.5rem})
+
+(defkeyframes anim-frames []
+  ["0%" {:opacity 0}]
+  ["100%" {:opacity 1}])
+
+(defclass new-tile
+  []
+  :animation [[(anim-frames) "560ms" 'ease-in-out]])
 
 (defclass board
   []
