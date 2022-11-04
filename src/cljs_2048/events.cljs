@@ -10,7 +10,7 @@
 (defn- move
   "Move board and check gameover"
   [board direction]
-  (let [new-board (board/move board direction)]
+  (let [new-board (game/move board direction)]
     (when (game/gameover? new-board)
       (re-frame/dispatch [::game-events/gameover]))
     new-board))
@@ -34,22 +34,22 @@
  ::move-up
  (fn-traced
   [db [_ _]]
-  (assoc db :board (move (:board db) ::board/up))))
+  (assoc db :board (move (:board db) ::game/up))))
 
 (re-frame/reg-event-db
  ::move-down
  (fn-traced
   [db [_ _]]
-  (assoc db :board (move (:board db) ::board/down))))
+  (assoc db :board (move (:board db) ::game/down))))
 
 (re-frame/reg-event-db
  ::move-right
  (fn-traced
   [db [_ _]]
-  (assoc db :board (move (:board db) ::board/right))))
+  (assoc db :board (move (:board db) ::game/right))))
 
 (re-frame/reg-event-db
  ::move-left
  (fn-traced
   [db [_ _]]
-  (assoc db :board (move (:board db) ::board/left))))
+  (assoc db :board (move (:board db) ::game/left))))
