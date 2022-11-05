@@ -27,7 +27,7 @@
        ]]}]))
 
 ;; Displaying the game tile
-(defn tile-colors
+(defn tile-colours
   [value]
   (case value
     0         "#BBBBBB"
@@ -49,7 +49,7 @@
 (defn tile-panel
   [index value]
   ^{:key index}
-  [:div {:class (styles/board-tile (tile-colors value))}
+  [:div {:class (styles/board-tile (tile-colours value))}
    (if (zero? value) "" value)])
 
 ;; Panel used to show Score and Best score
@@ -63,7 +63,7 @@
   []
   (let [board (re-frame/subscribe [::subs/board])] ;; Get the current state of the board
     [:div {:class (styles/board)}
-     ;; (cljs.pprint/pprint board) ; debugging to console.log the board data
+     ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
      (map-indexed ;; Each row of the board
       (fn [index value]
         ^{:key index}
