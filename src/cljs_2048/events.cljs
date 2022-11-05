@@ -1,19 +1,25 @@
 (ns cljs-2048.events
   (:require
-   [cljs-2048.board :as board]
+   [cljs-2048.board :as b]
    [cljs-2048.db :as db]
-   [cljs-2048.game :as game]
+   [cljs-2048.game :as g]
    [cljs-2048.game-events :as game-events]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [re-frame.core :as re-frame]))
 
+(defn check-gameover
+  "Dispatch gameover if gameover. Returns the board"
+  [board]
+  (when (g/gameover? board)
+    (re-frame/dispatch [::game-events/gameover]))
+  board)
+
 (defn- move
-  "Move board and check gameover"
+  "Make a move in the direction and check gameover"
   [board direction]
-  (let [new-board (game/move board direction)]
-    (when (game/gameover? new-board)
-      (re-frame/dispatch [::game-events/gameover]))
-    new-board))
+  (-> board
+      (g/move direction)
+      (check-gameover)))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -21,35 +27,39 @@
   [_ _]
   db/default-db))
 
-(re-frame/reg-event-db
- ::start-game
- (fn-traced
+(defn start-game
   [db [_ _]]
   (assoc db
-         :board (board/with-two-random-tiles)
+         :board (b/with-two-random-tiles)
          :gameover false
-         :score 0)))
+         :score 0))
 
-(re-frame/reg-event-db
- ::move-up
- (fn-traced
-  [db [_ _]]
-  (assoc db :board (move (:board db) ::game/up))))
+(defn move-up
+  [{:keys [board] :as db} [_ _]]
+  (assoc db
+         :board (move board ::g/up)))
 
-(re-frame/reg-event-db
- ::move-down
- (fn-traced
-  [db [_ _]]
-  (assoc db :board (move (:board db) ::game/down))))
+(defn move-down
+  [{:keys [board] :as db} [_ _]]
+  (assoc db
+         :board (move board ::g/down)))
 
-(re-frame/reg-event-db
- ::move-right
- (fn-traced
-  [db [_ _]]
-  (assoc db :board (move (:board db) ::game/right))))
+(defn move-right
+  [{:keys [board] :as db} [_ _]]
+  (assoc db
+         :board (move board ::g/right)))
 
-(re-frame/reg-event-db
- ::move-left
- (fn-traced
-  [db [_ _]]
-  (assoc db :board (move (:board db) ::game/left))))
+(defn move-left
+  [{:keys [board] :as db} [_ _]]
+  (assoc db
+         :board (move board ::g/left)))
+
+(re-frame/reg-event-db ::start-game start-game)
+
+(re-frame/reg-event-db ::move-up move-up)
+
+(re-frame/reg-event-db ::move-down move-down)
+
+(re-frame/reg-event-db ::move-right move-right)
+
+(re-frame/reg-event-db ::move-left move-left)
