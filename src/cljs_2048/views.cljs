@@ -1,7 +1,6 @@
 (ns cljs-2048.views
   (:require
    [cljs-2048.events :as events]
-   [cljs-2048.styles :as styles]
    [cljs-2048.subs :as subs]
    [re-frame.core :as re-frame]
    [re-pressed.core :as rp]))
@@ -27,47 +26,29 @@
        ]]}]))
 
 ;; Displaying the game tile
-(defn tile-colours
-  [value]
-  (case value
-    0         "#BBBBBB"
-    2         "#7fbfc7"
-    4         "#82b4c2"
-    8         "#86aabc"
-    16        "#899fb7"
-    32        "#8c95b1"
-    64        "#908aac"
-    128       "#937fa7"
-    256       "#9675a1"
-    512       "#996a9c"
-    1024      "#9d5f97"
-    2048      "#a05591"
-    4096      "#a34a8c"
-    8192      "#a74086"
-    "default" "#aa3581"))
-
 (defn tile-panel
   [index value]
   ^{:key index}
-  [:div {:class (styles/board-tile (tile-colours value))}
+  [:div {:class (str "tile tile-" value)}
    (if (zero? value) "" value)])
 
 ;; Panel used to show Score and Best score
 (defn score-panel
   [header value]
-  [:div.score
-   [:h3 header ": " value]])
+  [:div {:class "right-0 z-10 mt-2 -mr-1 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" :aria-orientation "vertical" :aria-labelledby "mobile-menu-button"}
+   [:span {:class "block px-4 py-2 text-lg text-gray-700"}
+    [:h3 header]
+    value]])
 
 (defn board-panel
   "Rows and columns display of current board"
   []
   (let [board (re-frame/subscribe [::subs/board])] ;; Get the current state of the board
-    [:div {:class (styles/board)}
+    [:div.board
      ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
-     (map-indexed ;; Each row of the board
-      (fn [index value]
-        ^{:key index}
-        [:div {:class (styles/board-row)}
+     (map ;; Each row of the board
+      (fn [value]
+        [:div.row
          (map-indexed ;; Each tile of the row
           tile-panel
           value)])
@@ -83,18 +64,19 @@
   (let [score (re-frame/subscribe [::subs/score])
         high-score (re-frame/subscribe [::subs/high-score])
         gameover (re-frame/subscribe [::subs/gameover])]
-    [:div#game-panel
+    [:div.game-panel
      (score-panel "Score" @score)
      (score-panel "High Score" @high-score)
      (when @gameover
        (gameover-panel))
-     [:button {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
+     [:button..btn-primary  {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
      [:br.clear]
-     (board-panel)]))
+     [:div.relative.rounded-xl.overflow-auto.p-8
+      (board-panel)]]))
 
 (defn main-panel
   []
   (let [name (re-frame/subscribe [::subs/name])]
-    [:div
-     [:h1 @name]
+    [:div.container.mx-auto.center
+     [:h1.text-3xl @name]
      [display-game]]))
