@@ -1,6 +1,7 @@
 (ns cljs-2048.views
   (:require
    [cljs-2048.events :as events]
+   [cljs-2048.gameover :as gameover]
    [cljs-2048.subs :as subs]
    [re-frame.core :as re-frame]
    [re-pressed.core :as rp]))
@@ -60,8 +61,7 @@
      [:br.clear]]))
 
 (defn gameover-panel []
-  [:div
-   "Game Over"])
+  [:div gameover/view])
 
 (defn score
   []
