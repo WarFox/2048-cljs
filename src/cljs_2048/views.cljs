@@ -34,11 +34,15 @@
 
 ;; Panel used to show Score and Best score
 (defn score-panel
-  [header value]
-  [:div {:class "right-0 z-10 mt-2 -mr-1 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" :aria-orientation "vertical" :aria-labelledby "mobile-menu-button"}
-   [:span {:class "block px-4 py-2 text-lg text-gray-700"}
-    [:h3 header]
-    value]])
+  [type value]
+  (let [[header class] (if (= type ::high-score)
+                         ["High Score" "score score-high"]
+                         ["Score" "score"])]
+    [:div {:class class
+           :aria-orientation "vertical" :aria-labelledby "mobile-menu-button"}
+     [:span {:class "block px-4 py-2 text-lg text-gray-700"}
+      [:h3 header]
+      value]]))
 
 (defn board-panel
   "Rows and columns display of current board"
@@ -59,24 +63,30 @@
   [:div
    "Game Over"])
 
-(defn display-game
+(defn score
   []
   (let [score (re-frame/subscribe [::subs/score])
-        high-score (re-frame/subscribe [::subs/high-score])
-        gameover (re-frame/subscribe [::subs/gameover])]
-    [:div.game-panel
-     (score-panel "Score" @score)
-     (score-panel "High Score" @high-score)
-     (when @gameover
-       (gameover-panel))
-     [:button..btn-primary  {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
-     [:br.clear]
-     [:div.relative.rounded-xl.overflow-auto.p-8
-      (board-panel)]]))
+        high-score (re-frame/subscribe [::subs/high-score])]
+    [:div.flex.flex-row-reverse
+     (score-panel ::high-score @high-score)
+     (score-panel ::score @score)]))
+
+(defn game-panel
+  []
+  (let [gameover (re-frame/subscribe [::subs/gameover])]
+    [:div.flex.flex-col.items-center
+     (when @gameover (gameover-panel))
+     [:button.btn-primary.bg-blue-200 {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
+     [board-panel]]))
+
+(defn header
+  [name]
+  [:h2.header name])
 
 (defn main-panel
   []
   (let [name (re-frame/subscribe [::subs/name])]
     [:div.container.mx-auto.center
-     [:h1.text-3xl @name]
-     [display-game]]))
+     (header @name)
+     [score]
+     [game-panel]]))
