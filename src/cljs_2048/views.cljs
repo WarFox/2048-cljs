@@ -28,9 +28,9 @@
 
 ;; Displaying the game tile
 (defn tile-panel
-  [index value]
+  [index [value state]]
   ^{:key index}
-  [:div {:class (str "tile tile-" value)}
+  [:div {:class (str "tile tile-" value " tile-position-1-" (inc index))}
    (if (zero? value) "" value)])
 
 ;; Panel used to show Score and Best score
@@ -51,13 +51,10 @@
   (let [board (re-frame/subscribe [::subs/board])] ;; Get the current state of the board
     [:div.board
      ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
-     (map ;; Each row of the board
-      (fn [value]
-        [:div.row
-         (map-indexed ;; Each tile of the row
-          tile-panel
-          value)])
-      @board)
+     (map (fn [row] ;; Each row of the board
+            [:div.row
+             (map-indexed tile-panel row)]);; Each tile of the row
+          @board)
      [:br.clear]]))
 
 (defn gameover-panel []
@@ -76,7 +73,7 @@
   (let [gameover (re-frame/subscribe [::subs/gameover])]
     [:div.flex.flex-col.items-center
      (when @gameover (gameover-panel))
-     [:button.btn-primary.bg-blue-200 {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
+     [:button.btn-primary {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
      [board-panel]]))
 
 (defn header
@@ -86,7 +83,8 @@
 (defn main-panel
   []
   (let [name (re-frame/subscribe [::subs/name])]
-    [:div.container.mx-auto.center
+    [:div.relative.flex.min-h-screen.flex-col.justify-center.overflow-hidden.bg-gray-50.py-6.sm:py-12
+     [:div.container.mx-auto
      (header @name)
-     [score]
+     [score]]
      [game-panel]]))

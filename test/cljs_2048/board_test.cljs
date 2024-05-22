@@ -4,46 +4,44 @@
    [cljs.test :refer-macros [deftest testing is]]))
 
 (deftest initial-board-test
-  (testing "Initial board must be 4x4"
-    (is (= (count sut/initial-board) 4))
-    (is (= (count (nth sut/initial-board 0)) 4))
-    (is (= (count (nth sut/initial-board 1)) 4))
-    (is (= (count (nth sut/initial-board 2)) 4))
-    (is (= (count (nth sut/initial-board 3)) 4)))
-
-  (testing "Inital board must be filled with zeroes"
-    (is (true? (every? zero? (nth sut/initial-board 0))))))
+  (testing "Inital board must be a 4x4 matrix filled with zeroes"
+    (is (= sut/initial-board
+              [[[0] [0] [0] [0]]
+               [[0] [0] [0] [0]]
+               [[0] [0] [0] [0]]
+               [[0] [0] [0] [0]]]))))
 
 (deftest set-tile
   (let [board sut/initial-board]
     (testing "Set value at given x and y"
       (is (= (sut/set-tile board 1 2 4)
-             [[0 0 0 0]
-              [0 0 4 0]
-              [0 0 0 0]
-              [0 0 0 0]])))))
+             [[[0] [0] [0] [0]]
+              [[0] [0] [4] [0]]
+              [[0] [0] [0] [0]]
+              [[0] [0] [0] [0]]])))))
 
 (deftest get-tile
   (let [board (sut/set-tile sut/initial-board 1 3 8)]
     (testing "Get tile value of given x and y"
-      (is (= (sut/get-tile board 1 3) 8)))))
+      (is (= (sut/get-tile board 1 3) [8])))))
 
 (deftest empty-tiles
-  (is (= (sut/empty-tiles [[1 2 3 0]
-                           [0 6 7 0]
-                           [9 0 11 12]
-                           [13 0 15 16]])
+  (is (= (sut/empty-tiles [[[1] [2] [3] [0]]
+                           [[0] [6] [7] [0]]
+                           [[9] [0] [11] [12]]
+                           [[13] [0] [15] [16]]])
          [[0 3] [1 0] [1 3] [2 1] [3 1]])))
 
 (deftest random-tile-test
-  (testing "returns board if board is full"
-    (let [board [[1 2 3 4]
-                 [5 6 7 8]
-                 [5 6 7 8]
-                 [5 6 7 8]]]
+  (testing "random-tile returns board if board is full"
+    (let [board [[[1] [2] [3] [4]]
+                 [[5] [6] [7] [8]]
+                 [[5] [6] [7] [8]]
+                 [[5] [6] [7] [8]]]]
       (is (= (sut/random-tile board)
              board)))))
 
+;; Transpose Test
 (def test-board
   [[1 2 3 4]
    [5 6 7 8]
@@ -72,50 +70,48 @@
           [15 11 7 3]
           [16 12 8 4]])))
 
+;; End of transpose test
+
 (deftest fill-zeroes-test
   (testing "fills empty vector with n zeroes"
     (is (= (sut/fill-zeroes [] 10)
-           [0 0 0 0 0 0 0 0 0 0])))
+            [[0] [0] [0] [0] [0] [0] [0] [0] [0] [0]])))
 
   (testing "fills non-empty vector with no zeroes"
-    (is (= (sut/fill-zeroes [2 4] 7)
-           [2 4 0 0 0 0 0])))
+    (is (= (sut/fill-zeroes [[2] [4]] 7)
+           [[2] [4] [0] [0] [0] [0] [0]])))
 
   (testing "if vector size is = n, return the vector"
-    (is (= (sut/fill-zeroes [2 4] 2)
-           [2 4])))
+    (is (= (sut/fill-zeroes [[2] [4]] 2)
+           [[2] [4]])))
 
   (testing "if vector size is > n, return the vector"
     (is (= (sut/fill-zeroes [1 2 3 4] 2)
-           [1 2 3 4])))
-
-  (testing "default n is 4"
-    (is (= (sut/fill-zeroes [1 2])
-           [1 2 0 0]))))
+           [1 2 3 4]))))
 
 (deftest combine-test
-  (is (= (sut/combine [2 2 0 0])
-         [4 0 0 0]))
+  (is (= (sut/combine [[2] [2] [0] [0]])
+         [[4] [0] [0] [0]]))
 
-  (is (= (sut/combine [4 4 2 2])
-         [8 4 0 0]))
+  (is (= (sut/combine [[4] [4] [2] [2]])
+         [[8] [4] [0] [0]]))
 
-  (is (= (sut/combine [1 2 3 4])
-         [1 2 3 4]))
+  (is (= (sut/combine [[1] [2] [3] [4]])
+         [[1] [2] [3] [4]]))
 
-  (is (= (sut/combine [4 2 2 0])
-         [4 4 0 0]))
+  (is (= (sut/combine [[4] [2] [2] [0]])
+         [[4] [4] [0] [0]]))
 
   (testing "map combine for a matrix"
     (is (= (map sut/combine
-                [[4 4 2 2]
-                 [6 4 2 2]
-                 [8 8 2 0]
-                 [6 8 2 2]])
-           [[8 4 0 0]
-            [6 4 4 0]
-            [16 2 0 0]
-            [6 8 4 0]]))))
+                [[[4] [4] [2] [2]]
+                 [[6] [4] [2] [2]]
+                 [[8] [8] [2] [0]]
+                 [[6] [8] [2] [2]]])
+           [[[8] [4] [0] [0]]
+            [[6] [4] [4] [0]]
+            [[16] [2] [0] [0]]
+            [[6] [8] [4] [0]]]))))
 
 (deftest reverse-test
   (is (= (sut/reverse-board test-board)
@@ -127,62 +123,62 @@
 (deftest stack-left
   (testing "Move all tiles to left - single column"
     (is (= (sut/stack-left
-            [[0 2 4 6]
-             [0 4 6 8]
-             [0 6 8 10]
-             [0 8 10 12]])
-           [[2 4 6 0]
-            [4 6 8 0]
-            [6 8 10 0]
-            [8 10 12 0]])))
+            [[[0] [2] [4] [6]]
+             [[0] [4] [6] [8]]
+             [[0] [6] [8] [10]]
+             [[0] [8] [10] [12]]])
+           [[[2] [4] [6] [0]]
+            [[4] [6] [8] [0]]
+            [[6] [8] [10] [0]]
+            [[8] [10] [12] [0]]])))
 
   (testing "Move all tiles to left - two columns"
     (is (= (sut/stack-left
-            [[0 0 4 6]
-             [0 0 6 8]
-             [0 0 8 10]
-             [0 0 10 12]])
-           [[4 6 0 0]
-            [6 8 0 0]
-            [8 10 0 0]
-            [10 12 0 0]])))
+            [[[0] [0] [4] [6]]
+             [[0] [0] [6] [8]]
+             [[0] [0] [8] [10]]
+             [[0] [0] [10] [12]]])
+           [[[4] [6] [0] [0]]
+            [[6] [8] [0] [0]]
+            [[8] [10] [0] [0]]
+            [[10] [12] [0] [0]]])))
 
   (testing "Move all tiles to left - mixed column"
     (is (= (sut/stack-left
-            [[0 2 0 6]
-             [0 4 0 8]
-             [0 6 0 10]
-             [0 8 0 12]])
-           [[2 6 0 0]
-            [4 8 0 0]
-            [6 10 0 0]
-            [8 12 0 0]]))))
+            [[[0] [2] [0] [6]]
+             [[0] [4] [0] [8]]
+             [[0] [6] [0] [10]]
+             [[0] [8] [0] [12]]])
+           [[[2] [6] [0] [0]]
+            [[4] [8] [0] [0]]
+            [[6] [10] [0] [0]]
+            [[8] [12] [0] [0]]]))))
 
 (deftest move-tiles-left
   (testing "Stack vector to left - three"
-    (is (= (sut/move-tiles-left [0 2 4 6])
-           [2 4 6 0])))
+    (is (= (sut/move-tiles-left [[0] [2] [4] [6]])
+           [[2] [4] [6] [0]])))
 
   (testing "Stack vector to left - two"
-    (is (= (sut/move-tiles-left [0 0 4 6])
-           [4 6 0 0])))
+    (is (= (sut/move-tiles-left [[0] [0] [4] [6]])
+           [[4] [6] [0] [0]])))
 
   (testing "Stack vector to left - single "
-    (is (= (sut/move-tiles-left [0 0 0 6])
-           [6 0 0 0])))
+    (is (= (sut/move-tiles-left [[0] [0] [0] [6]])
+           [[6] [0] [0] [0]])))
 
   (testing "Stack vector to left - all zeroes"
-    (is (= (sut/move-tiles-left [0 0 0 0])
-           [0 0 0 0])))
+    (is (= (sut/move-tiles-left [[0] [0] [0] [0]])
+           [[0] [0] [0] [0]])))
 
   (testing "Stack vector to left - all numbers"
-    (is (= (sut/move-tiles-left [2 4 6 8])
-           [2 4 6 8])))
+    (is (= (sut/move-tiles-left [[2] [4] [6] [8]])
+           [[2] [4] [6] [8]])))
 
   (testing "Stack vector to left - zero in the middle"
-    (is (= (sut/move-tiles-left [2 4 0 8])
-           [2 4 8 0])))
+    (is (= (sut/move-tiles-left [[2] [4] [0] [8]])
+           [[2] [4] [8] [0]])))
 
   (testing "Stack vector to left - zeroes in the middle"
-    (is (= (sut/move-tiles-left [2 0 0 8])
-           [2 8 0 0]))))
+    (is (= (sut/move-tiles-left [[2] [0] [0] [8]])
+           [[2] [8] [0] [0]]))))

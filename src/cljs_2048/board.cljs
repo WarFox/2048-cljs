@@ -8,16 +8,16 @@
 (def random-fill #(rand-nth [2 2 2 4])) ;; Favor 2 for random filling
 
 (def initial-board
-  [[0 0 0 0]
-   [0 0 0 0]
-   [0 0 0 0]
-   [0 0 0 0]])
+  [[[0] [0] [0] [0]]
+   [[0] [0] [0] [0]]
+   [[0] [0] [0] [0]]
+   [[0] [0] [0] [0]]])
 
 (defn set-tile
   "Set value at given row and column of the board"
   [board r c value]
   (let [row (nth board r)
-        updated (assoc row c value)]
+        updated (assoc row c [value])]
     (assoc board r updated)))
 
 (defn get-tile
@@ -32,7 +32,7 @@
   [board]
   (for [r     (range rows-count)
         c     (range columns-count)
-        :when (zero? (get-tile board r c))]
+        :when (zero? (first (get-tile board r c)))]
     [r c]))
 
 (defn random-tile
@@ -66,27 +66,25 @@
 
 (defn fill-zeroes
   "If vector v's length is less than n, fill the remaining slots with 0.
-   Otherwise returns the v. Default fill-count is columns-count."
-  ([v]
-   (fill-zeroes v columns-count))
-  ([v n]
+   Otherwise returns the v."
+  [v n]
    (let [fill-count (- n (count v))]
-     (into v (repeat fill-count 0)))))
+     (into v (repeat fill-count [0]))))
 
 (defn combine
-  "Combines two equal tiles into one in the v and fills remaining with zeroes"
+  "Combines two equal tiles into one in the vector v and fills remaining with zeroes"
   [v]
   (loop [[head & remaining] v
          acc                []]
     (cond
       (empty? remaining)
-      (fill-zeroes (conj acc (if head head 0))) ;; head can be nil
+      (fill-zeroes (conj acc (if head head [0])) columns-count) ;; head can be nil
 
       (= head (first remaining))
-      (let [sum (* 2 head)]
+      (let [sum (+ (first head) (first head))]
         (when (pos? sum)
-          (re-frame/dispatch [::game-events/add-score sum]))
-        (recur (rest remaining) (conj acc sum)))
+           (re-frame/dispatch [::game-events/add-score sum]))
+        (recur (rest remaining) (conj acc [sum])))
 
       :else
       (recur remaining (conj acc head)))))
@@ -99,8 +97,8 @@
 (defn move-tiles-left
   "Move the tiles to left in v, by shifting value to empty tile"
   [v]
-  (-> (filterv pos? v)
-      (fill-zeroes)))
+  (-> (filterv #(pos? (first %)) v)
+      (fill-zeroes columns-count)))
 
 (defn stack-left
   [board]
