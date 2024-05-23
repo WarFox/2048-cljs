@@ -72,18 +72,19 @@
      (into v (repeat fill-count [0]))))
 
 (defn combine
-  "Combines two equal tiles into one in the vector v and fills remaining with zeroes"
+  "Combines two equal tiles into one in the vector v and fills remaining with zeroes.
+  v is a vector of vectors of single integer, for example [[2] [0] [4] [4]]
+  [0] means empty slot and all [0] should be trailing in the result."
   [v]
-  (loop [[head & remaining] v
+  (loop [[head & remaining] (remove #(= [0] %) v) ;; Remove [0] tiles before reduction
          acc                []]
     (cond
       (empty? remaining)
       (fill-zeroes (conj acc (if head head [0])) columns-count) ;; head can be nil
 
       (= head (first remaining))
-      (let [sum (+ (first head) (first head))]
-        (when (pos? sum)
-           (re-frame/dispatch [::game-events/add-score sum]))
+      (let [sum (* 2 (first head))]
+        (re-frame/dispatch [::game-events/add-score sum])
         (recur (rest remaining) (conj acc [sum])))
 
       :else
