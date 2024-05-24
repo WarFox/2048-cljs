@@ -51,7 +51,9 @@
   (let [board (re-frame/subscribe [::subs/board])] ;; Get the current state of the board
     [:div.board
      ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
-     (map (fn [row] ;; Each row of the board
+     (map-indexed
+      (fn [row-index row] ;; Each row of the board
+            ^{:key row-index}
             [:div.row
              (map-indexed tile-panel row)]);; Each tile of the row
           @board)
