@@ -14,16 +14,16 @@
 (deftest set-tile
   (let [board sut/initial-board]
     (testing "Set value at given x and y"
-      (is (= (sut/set-tile board 1 2 4)
-             [[[0] [0] [0] [0]]
-              [[0] [0] [4] [0]]
-              [[0] [0] [0] [0]]
-              [[0] [0] [0] [0]]])))))
+      (is (= (sut/set-tile board 1 2 4 :state)
+             [[[0] [0] [0]        [0]]
+              [[0] [0] [4 :state] [0]]
+              [[0] [0] [0]        [0]]
+              [[0] [0] [0]        [0]]])))))
 
 (deftest get-tile
-  (let [board (sut/set-tile sut/initial-board 1 3 8)]
+  (let [board (sut/set-tile sut/initial-board 1 3 8 :state)]
     (testing "Get tile value of given x and y"
-      (is (= (sut/get-tile board 1 3) [8])))))
+      (is (= (sut/get-tile board 1 3) [8 :state])))))
 
 (deftest empty-tiles
   (is (= (sut/empty-tiles [[[1] [2] [3] [0]]
@@ -91,28 +91,31 @@
 
 (deftest combine-test
   (is (= (sut/combine [[2] [2] [0] [0]])
-         [[4] [0] [0] [0]]))
+         [[4 :merged] [0] [0] [0]]))
 
   (is (= (sut/combine [[4] [4] [2] [2]])
-         [[8] [4] [0] [0]]))
+         [[8 :merged] [4 :merged] [0] [0]]))
 
   (is (= (sut/combine [[1] [2] [3] [4]])
          [[1] [2] [3] [4]]))
 
   (is (= (sut/combine [[4] [4] [4] [4]])
-         [[8] [8] [0] [0]]))
+         [[8 :merged] [8 :merged] [0] [0]]))
 
   (is (= (sut/combine [[2] [0] [4] [4]])
-         [[2] [8] [0] [0]]))
+         [[2] [8 :merged] [0] [0]]))
 
   (is (= (sut/combine [[0] [0] [4] [4]])
-         [[8] [0] [0] [0]]))
+         [[8 :merged] [0] [0] [0]]))
 
   (is (= (sut/combine [[4] [4] [0] [4]])
-         [[8] [4] [0] [0]]))
+         [[8 :merged] [4] [0] [0]]))
+
+  (is (= (sut/combine [[4] [4] [8] [4]])
+         [[8 :merged] [8] [4] [0]]))
 
   (is (= (sut/combine [[4] [2] [2] [0]])
-         [[4] [4] [0] [0]]))
+         [[4] [4 :merged] [0] [0]]))
 
   (testing "map combine for a matrix"
     (is (= (map sut/combine
@@ -120,10 +123,10 @@
                  [[6] [4] [2] [2]]
                  [[8] [8] [2] [0]]
                  [[6] [8] [2] [2]]])
-           [[[8] [4] [0] [0]]
-            [[6] [4] [4] [0]]
-            [[16] [2] [0] [0]]
-            [[6] [8] [4] [0]]]))))
+           [[[8 :merged]  [4 :merged] [0]         [0]]
+            [[6]          [4]         [4 :merged] [0]]
+            [[16 :merged] [2]         [0]         [0]]
+            [[6]          [8]         [4 :merged] [0]]]))))
 
 (deftest reverse-test
   (is (= (sut/reverse-board test-board)

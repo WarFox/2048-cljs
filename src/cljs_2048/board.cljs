@@ -15,9 +15,9 @@
 
 (defn set-tile
   "Set value at given row and column of the board"
-  [board r c value]
+  [board r c value state]
   (let [row (nth board r)
-        updated (assoc row c [value])]
+        updated (assoc row c [value state])]
     (assoc board r updated)))
 
 (defn get-tile
@@ -36,11 +36,11 @@
     [r c]))
 
 (defn random-tile
-  "Set 2 or 4 to random empty position of tile"
+  "Set 2 or 4 to random empty positions of tile"
   [board]
   (if-let [tiles (seq (empty-tiles board))]
     (let [[r c] (rand-nth tiles)]
-      (set-tile board r c (random-fill)))
+      (set-tile board r c (random-fill) :random))
     board))
 
 (defn with-two-random-tiles
@@ -85,7 +85,7 @@
       (= head (first remaining))
       (let [sum (* 2 (first head))]
         (re-frame/dispatch [::game-events/add-score sum])
-        (recur (rest remaining) (conj acc [sum])))
+        (recur (rest remaining) (conj acc [sum :merged])))
 
       :else
       (recur remaining (conj acc head)))))

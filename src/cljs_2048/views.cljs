@@ -30,7 +30,17 @@
 (defn tile-panel
   [index [value state]]
   ^{:key index}
-  [:div {:class (str "tile tile-" value " tile-position-1-" (inc index))}
+   ;; TODO tile-position-1 index needs row-index
+   [:div {:class (str "tile tile-" value " tile-position-1-" (inc index)
+                      (cond
+                        (= state :merged)
+                        " tile-merged
+"
+                        (= state :random)
+                        " tile-new"
+
+                        :else
+                        ""))}
    (if (zero? value) "" value)])
 
 ;; Panel used to show Score and Best score
