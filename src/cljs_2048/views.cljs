@@ -1,7 +1,6 @@
 (ns cljs-2048.views
   (:require
    [cljs-2048.events :as events]
-   [cljs-2048.gameover :as gameover]
    [cljs-2048.subs :as subs]
    [re-frame.core :as re-frame]
    [re-pressed.core :as rp]))
@@ -69,21 +68,32 @@
           @board)
      [:br.clear]]))
 
-(defn gameover-panel []
-  [:div gameover/view])
-
 (defn score
   []
   (let [score (re-frame/subscribe [::subs/score])
         high-score (re-frame/subscribe [::subs/high-score])]
-    [:div.flex.flex-row-reverse
+    [:div {:class "flex flex-row-reverse"}
      (score-panel ::high-score @high-score)
      (score-panel ::score @score)]))
+
+(defn gameover-panel []
+  [:div {:class "relative flex justify-center items-center z-20"}
+   [:div {:class "w-full h-full bg-gray-900 bg-opacity-60 top-0 fixed sticky-0"}
+    [:div {:class "2xl:container  2xl:mx-auto py-48 px-4 md:px-28 flex justify-center items-center"}
+     [:div {:class "w-96 md:w-auto relative flex flex-col justify-center items-center bg-white bg-opacity-60 py-16 px-4 md:px-24 xl:py-24 xl:px-36"}
+      [:div
+       [:h1 {:role "main" :class "text-3xl dark:text-white lg:text-4xl font-semibold text-center text-gray-800"}
+        "Game Over!"]]
+
+      (score)
+
+      [:div {:class "flex flex-col justify-center items-center"}
+       [:button.btn-primary {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]]]]]])
 
 (defn game-panel
   []
   (let [gameover (re-frame/subscribe [::subs/gameover])]
-    [:div.flex.flex-col.items-center
+    [:div {:class "flex flex-col items-center"}
      (when @gameover (gameover-panel))
      [:button.btn-primary {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
      [board-panel]]))
@@ -95,8 +105,8 @@
 (defn main-panel
   []
   (let [name (re-frame/subscribe [::subs/name])]
-    [:div.relative.flex.min-h-screen.flex-col.justify-center.overflow-hidden.bg-gray-50.py-6.sm:py-12
-     [:div.container.mx-auto
+    [:div {:class "relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12"}
+     [:div {:class "container mx-auto"}
      (header @name)
      [score]]
      [game-panel]]))
