@@ -4,35 +4,129 @@
 
 @layer components {
   .header {
-    @apply text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight;
+    @apply text-4xl font-bold text-blue-900 leading-8 sm:truncate sm:text-3xl sm:tracking-tight;
   }
 
   .board {
-    @apply grid grid-rows-4 grid-flow-col gap-2 bg-zinc-500 rounded-lg place-content-center p-4;
+    @apply grid grid-flow-row gap-2 bg-zinc-500 p-2;
   }
 
   .row {
-    @apply grid grid-cols-4 gap-2 rounded-lg shadow-lg;
+    @apply grid grid-flow-col gap-2 sm:gap-2;
   }
 
   .score {
-      @apply z-10 p-2 m-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
+    @apply z-10 p-2 m-2 w-48 rounded-md bg-white shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none;
   }
 
   .score-high {
-      @apply bg-gray-200;
+    @apply bg-gray-200;
   }
 
   .btn-primary {
-      @apply p-2 m-2 w-48 dark:text-blue-800 dark:hover:bg-blue-100 dark:bg-white sm:w-auto text-base text-center text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-800 bg-blue-800 hover:bg-black;
+    @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800;
   }
 
   .tile {
-    @apply text-black font-mono font-bold text-lg
-      transition duration-200 ease-in-out
-      box-border h-28 w-28 p-2 border-2
-      text-center
-      rounded-md shadow-md;
+    @apply sm:w-14 sm:h-14 md:w-28 md:h-28 flex items-center justify-center sm:text-xl md:text-3xl;
+  }
+
+    @keyframes appear {
+        0% {
+            opacity: 0;
+            transform: scale(0);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes pop {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+  .tile-new {
+    animation: appear 200ms ease 100ms;
+    animation-fill-mode: backwards;
+  }
+
+  .tile-merged {
+    animation: pop 200ms ease 100ms;
+    animation-fill-mode: backwards;
+  }
+
+  .tile-position-1-1 {
+    @apply text-red-400;
+  }
+
+  .tile-position-1-2 {
+    /* transform: translate(0px, 121px); */
+    @apply translate-x-8;
+  }
+
+  .tile-position-1-3 {
+    transform: translate(0px, 242px);
+  }
+
+  .tile-position-1-4 {
+    transform: translate(0px, 363px);
+  }
+
+  .tile-position-2-1 {
+    transform: translate(121px, 0px);
+  }
+
+  .tile-position-2-2 {
+    transform: translate(121px, 121px);
+  }
+
+  .tile-position-2-3 {
+    transform: translate(121px, 242px);
+  }
+
+  .tile-position-2-4 {
+    transform: translate(121px, 363px);
+  }
+
+  .tile-position-3-1 {
+    transform: translate(242px, 0px);
+  }
+
+  .tile-position-3-2 {
+    transform: translate(242px, 121px);
+  }
+
+  .tile-position-3-3 {
+    transform: translate(242px, 242px);
+  }
+
+  .tile-position-3-4 {
+    transform: translate(242px, 363px);
+  }
+
+  .tile-position-4-1 {
+    transform: translate(363px, 0px);
+  }
+
+  .tile-position-4-2 {
+    transform: translate(363px, 121px);
+  }
+
+  .tile-position-4-3 {
+    transform: translate(363px, 242px);
+  }
+
+  .tile-position-4-4 {
+    transform: translate(363px, 363px);
   }
 
   .tile-0 {
@@ -40,39 +134,39 @@
   }
 
   .tile-2 {
-    @apply bg-blue-100;
+    @apply bg-orange-100;
   }
 
   .tile-4 {
-    @apply bg-blue-200;
+    @apply bg-orange-200;
   }
 
   .tile-8 {
-    @apply bg-blue-300;
+    @apply bg-orange-300;
   }
 
   .tile-16 {
-    @apply bg-blue-400;
+    @apply bg-orange-400;
   }
 
   .tile-32 {
-    @apply bg-blue-500 text-slate-50;
+    @apply bg-orange-500 text-slate-50;
   }
 
   .tile-64 {
-    @apply bg-blue-600 text-slate-100;
+    @apply bg-orange-600 text-slate-100;
   }
 
   .tile-128 {
-    @apply bg-blue-700 text-slate-200;
+    @apply bg-orange-700 text-slate-200;
   }
 
   .tile-256 {
-    @apply bg-blue-800 text-slate-300;
+    @apply bg-orange-800 text-slate-300;
   }
 
   .tile-512 {
-    @apply bg-blue-900 text-slate-300;
+    @apply bg-orange-900 text-slate-300;
   }
 
   .tile-1024 {
@@ -86,5 +180,4 @@
   .tile-4096 {
     @apply bg-purple-800 text-slate-200;
   }
-
 }

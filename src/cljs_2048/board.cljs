@@ -8,16 +8,16 @@
 (def random-fill #(rand-nth [2 2 2 4])) ;; Favor 2 for random filling
 
 (def initial-board
-  [[0 0 0 0]
-   [0 0 0 0]
-   [0 0 0 0]
-   [0 0 0 0]])
+  [[[0] [0] [0] [0]]
+   [[0] [0] [0] [0]]
+   [[0] [0] [0] [0]]
+   [[0] [0] [0] [0]]])
 
 (defn set-tile
   "Set value at given row and column of the board"
-  [board r c value]
+  [board r c value state]
   (let [row (nth board r)
-        updated (assoc row c value)]
+        updated (assoc row c [value state])]
     (assoc board r updated)))
 
 (defn get-tile
@@ -28,19 +28,19 @@
       (nth c)))
 
 (defn empty-tiles
-  "Returns list of [r c] where r is row and c is column index of tile with zero"
+  "Returns list of [r c] where r is row and c is column index of tile with [0]"
   [board]
   (for [r     (range rows-count)
         c     (range columns-count)
-        :when (zero? (get-tile board r c))]
+        :when (= [0] (get-tile board r c))]
     [r c]))
 
 (defn random-tile
-  "Set 2 or 4 to random empty position of tile"
+  "Set 2 or 4 to random empty positions of tile"
   [board]
   (if-let [tiles (seq (empty-tiles board))]
     (let [[r c] (rand-nth tiles)]
-      (set-tile board r c (random-fill)))
+      (set-tile board r c (random-fill) :random))
     board))
 
 (defn with-two-random-tiles
@@ -66,30 +66,44 @@
 
 (defn fill-zeroes
   "If vector v's length is less than n, fill the remaining slots with 0.
-   Otherwise returns the v. Default fill-count is columns-count."
-  ([v]
-   (fill-zeroes v columns-count))
-  ([v n]
+   Otherwise returns the v."
+  [v n]
    (let [fill-count (- n (count v))]
-     (into v (repeat fill-count 0)))))
+     (into (vec v) (repeat fill-count [0]))))
 
 (defn combine
-  "Combines two equal tiles into one in the v and fills remaining with zeroes"
+  "Combines two equal tiles into one in the vector v and fills remaining with zeroes.
+  v is a vector of vectors of single integer, for example [[2 :random] [0] [4 :merged] [4]]
+  [0] means empty slot and all [0] should be trailing in the result.
+  Add state as :merged when combining two tiles
+  (combine [[2 :random] [0] [4 :merged] [4]]) ;; => [[2] [8 :merged] [0] [0]]
+  "
   [v]
-  (loop [[head & remaining] v
-         acc                []]
-    (cond
-      (empty? remaining)
-      (fill-zeroes (conj acc (if head head 0))) ;; head can be nil
+  (let [non-zero-v (remove zero? (map first v)) ;; Remove 0 tiles before reduction, work with value not state
+        merged     (reduce (fn [[acc prev] current]
+                              (cond
+                                ;; If previous is nil, set current as previous
+                                (nil? prev)
+                                [acc current]
 
-      (= head (first remaining))
-      (let [sum (* 2 head)]
-        (when (pos? sum)
-          (re-frame/dispatch [::game-events/add-score sum]))
-        (recur (rest remaining) (conj acc sum)))
+                                ;; If equal, merge and add to accumulator, set nil as previous
+                                (= prev current)
+                                (let [sum (+ prev current)]
+                                  (re-frame/dispatch [::game-events/add-score sum])
+                                  [(conj acc [sum :merged]) nil])
 
-      :else
-      (recur remaining (conj acc head)))))
+                                ;; If not equal, add previous to accumulator and current element as previous
+                                :else
+                                [(conj acc [prev]) current]))
+
+                            [[] nil] ;; Start with empty accumulator and nil previous
+                            non-zero-v) ;; Reduce over non-zero tiles.
+        ;; If last tile is not merged, add it to result
+        result       (first merged)
+        last         (second merged)
+        final-result (if last (conj result [last]) result)]
+
+        (fill-zeroes final-result columns-count)))
 
 (defn reverse-board
   "Reverse the board"
@@ -99,8 +113,8 @@
 (defn move-tiles-left
   "Move the tiles to left in v, by shifting value to empty tile"
   [v]
-  (-> (filterv pos? v)
-      (fill-zeroes)))
+  (-> (filterv #(pos? (first %)) v)
+      (fill-zeroes columns-count)))
 
 (defn stack-left
   [board]
