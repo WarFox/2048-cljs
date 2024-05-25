@@ -4,9 +4,15 @@
 
 (defn can-move-sideways?
   [v]
-  (->> (partition-by identity v)
-       (map count)
-       (some #(> % 1))))
+  (or
+   ;; if there is a zero, then we can move
+   (some #(= [0] %) v)
+
+   ;; if there are two consecutive equal values, then we can move
+   (->> (map first v) ;; get the value
+        (partition-by identity)
+        (map count)
+        (some #(> % 1)))))
 
 (defn can-move?
   [board]

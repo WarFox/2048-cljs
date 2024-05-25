@@ -28,19 +28,17 @@
 
 ;; Displaying the game tile
 (defn tile-panel
-  [index [value state]]
-  ^{:key index}
-   ;; TODO tile-position-1 index needs row-index
-   [:div {:class (str "tile tile-" value " tile-position-1-" (inc index)
+  [row-index col-index [value state]]
+  ^{:key col-index}
+   [:div {:class (str "tile tile-" value " tile-position-" (inc row-index) "-" (inc col-index)
                       (cond
                         (= state :merged)
-                        " tile-merged
-"
+                        " tile-merged"
+
                         (= state :random)
                         " tile-new"
 
-                        :else
-                        ""))}
+                        :else ""))}
    (if (zero? value) "" value)])
 
 ;; Panel used to show Score and Best score
@@ -65,7 +63,9 @@
       (fn [row-index row] ;; Each row of the board
             ^{:key row-index}
             [:div.row
-             (map-indexed tile-panel row)]);; Each tile of the row
+             (map-indexed (fn [col-index cell]
+                            (tile-panel row-index col-index cell))
+                          row)]);; Each tile of the row
           @board)
      [:br.clear]]))
 

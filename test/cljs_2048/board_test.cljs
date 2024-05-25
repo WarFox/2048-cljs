@@ -26,6 +26,11 @@
       (is (= (sut/get-tile board 1 3) [8 :state])))))
 
 (deftest empty-tiles
+  (is (empty? (sut/empty-tiles [[[1] [2] [3] [4]]
+                                [[5] [6] [7] [6]]
+                                [[9] [7] [11] [12]]
+                                [[13] [8] [15] [16]]])))
+
   (is (= (sut/empty-tiles [[[1] [2] [3] [0]]
                            [[0] [6] [7] [0]]
                            [[9] [0] [11] [12]]
@@ -116,6 +121,10 @@
 
   (is (= (sut/combine [[4] [2] [2] [0]])
          [[4] [4 :merged] [0] [0]]))
+
+  (testing "with random and merged"
+    (is (= (sut/combine [[4] [2 :random] [2 :merged] [0]])
+         [[4] [4 :merged] [0] [0]])))
 
   (testing "map combine for a matrix"
     (is (= (map sut/combine
