@@ -1,5 +1,5 @@
 {
-  "name": "cljs-2048",
+  "name": "2048-cljs",
   "scripts": {
     "ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
     "watch": "npx shadow-cljs watch app browser-test karma-test",
@@ -18,7 +18,7 @@
     "karma-chrome-launcher": "3.1.1",
     "karma-cljs-test": "0.1.0",
     "karma-junit-reporter": "2.0.1",
-    "shadow-cljs": "^2.24.1",
-    "tailwindcss": "^3.3.2"
+    "shadow-cljs": "2.26.2",
+    "tailwindcss": "3.4.3"
   }
 }
