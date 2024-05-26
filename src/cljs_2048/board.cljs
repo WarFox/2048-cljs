@@ -71,8 +71,8 @@
    (let [fill-count (- n (count v))]
      (into (vec v) (repeat fill-count [0]))))
 
-(defn combine
-  "Combines two equal tiles into one in the vector v and fills remaining with zeroes.
+(defn merge-left
+  "Merge two equal tiles into one in the vector v and fills remaining with zeroes.
   v is a vector of vectors of single integer, for example [[2 :random] [0] [4 :merged] [4]]
   [0] means empty slot and all [0] should be trailing in the result.
   Add state as :merged when combining two tiles
@@ -109,13 +109,3 @@
   "Reverse the board"
   [board]
   (mapv #(vec (rseq %)) board))
-
-(defn move-tiles-left
-  "Move the tiles to left in v, by shifting value to empty tile"
-  [v]
-  (-> (filterv #(pos? (first %)) v)
-      (fill-zeroes columns-count)))
-
-(defn stack-left
-  [board]
-  (map move-tiles-left board))

@@ -32,9 +32,7 @@
 (defn move-left
   "Move tiles to left and combine equal tiles at edge"
   [board]
-  (->> board
-       (b/stack-left)
-       (mapv b/combine)))
+  (mapv b/merge-left board))
 
 (defn move-right
   "Move tiles to right and combine equal tiles at edge"

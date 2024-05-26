@@ -94,40 +94,40 @@
     (is (= (sut/fill-zeroes [1 2 3 4] 2)
            [1 2 3 4]))))
 
-(deftest combine-test
-  (is (= (sut/combine [[2] [2] [0] [0]])
+(deftest merge-left-test
+  (is (= (sut/merge-left [[2] [2] [0] [0]])
          [[4 :merged] [0] [0] [0]]))
 
-  (is (= (sut/combine [[4] [4] [2] [2]])
+  (is (= (sut/merge-left [[4] [4] [2] [2]])
          [[8 :merged] [4 :merged] [0] [0]]))
 
-  (is (= (sut/combine [[1] [2] [3] [4]])
+  (is (= (sut/merge-left [[1] [2] [3] [4]])
          [[1] [2] [3] [4]]))
 
-  (is (= (sut/combine [[4] [4] [4] [4]])
+  (is (= (sut/merge-left [[4] [4] [4] [4]])
          [[8 :merged] [8 :merged] [0] [0]]))
 
-  (is (= (sut/combine [[2] [0] [4] [4]])
+  (is (= (sut/merge-left [[2] [0] [4] [4]])
          [[2] [8 :merged] [0] [0]]))
 
-  (is (= (sut/combine [[0] [0] [4] [4]])
+  (is (= (sut/merge-left [[0] [0] [4] [4]])
          [[8 :merged] [0] [0] [0]]))
 
-  (is (= (sut/combine [[4] [4] [0] [4]])
+  (is (= (sut/merge-left [[4] [4] [0] [4]])
          [[8 :merged] [4] [0] [0]]))
 
-  (is (= (sut/combine [[4] [4] [8] [4]])
+  (is (= (sut/merge-left [[4] [4] [8] [4]])
          [[8 :merged] [8] [4] [0]]))
 
-  (is (= (sut/combine [[4] [2] [2] [0]])
+  (is (= (sut/merge-left [[4] [2] [2] [0]])
          [[4] [4 :merged] [0] [0]]))
 
   (testing "with random and merged"
-    (is (= (sut/combine [[4] [2 :random] [2 :merged] [0]])
+    (is (= (sut/merge-left [[4] [2 :random] [2 :merged] [0]])
          [[4] [4 :merged] [0] [0]])))
 
-  (testing "map combine for a matrix"
-    (is (= (map sut/combine
+  (testing "map merge-left for a matrix"
+    (is (= (map sut/merge-left
                 [[[4] [4] [2] [2]]
                  [[6] [4] [2] [2]]
                  [[8] [8] [2] [0]]
@@ -143,66 +143,3 @@
           [8 7 6 5]
           [12 11 10 9]
           [16 15 14 13]])))
-
-(deftest stack-left
-  (testing "Move all tiles to left - single column"
-    (is (= (sut/stack-left
-            [[[0] [2] [4] [6]]
-             [[0] [4] [6] [8]]
-             [[0] [6] [8] [10]]
-             [[0] [8] [10] [12]]])
-           [[[2] [4] [6] [0]]
-            [[4] [6] [8] [0]]
-            [[6] [8] [10] [0]]
-            [[8] [10] [12] [0]]])))
-
-  (testing "Move all tiles to left - two columns"
-    (is (= (sut/stack-left
-            [[[0] [0] [4] [6]]
-             [[0] [0] [6] [8]]
-             [[0] [0] [8] [10]]
-             [[0] [0] [10] [12]]])
-           [[[4] [6] [0] [0]]
-            [[6] [8] [0] [0]]
-            [[8] [10] [0] [0]]
-            [[10] [12] [0] [0]]])))
-
-  (testing "Move all tiles to left - mixed column"
-    (is (= (sut/stack-left
-            [[[0] [2] [0] [6]]
-             [[0] [4] [0] [8]]
-             [[0] [6] [0] [10]]
-             [[0] [8] [0] [12]]])
-           [[[2] [6] [0] [0]]
-            [[4] [8] [0] [0]]
-            [[6] [10] [0] [0]]
-            [[8] [12] [0] [0]]]))))
-
-(deftest move-tiles-left
-  (testing "Stack vector to left - three"
-    (is (= (sut/move-tiles-left [[0] [2] [4] [6]])
-           [[2] [4] [6] [0]])))
-
-  (testing "Stack vector to left - two"
-    (is (= (sut/move-tiles-left [[0] [0] [4] [6]])
-           [[4] [6] [0] [0]])))
-
-  (testing "Stack vector to left - single "
-    (is (= (sut/move-tiles-left [[0] [0] [0] [6]])
-           [[6] [0] [0] [0]])))
-
-  (testing "Stack vector to left - all zeroes"
-    (is (= (sut/move-tiles-left [[0] [0] [0] [0]])
-           [[0] [0] [0] [0]])))
-
-  (testing "Stack vector to left - all numbers"
-    (is (= (sut/move-tiles-left [[2] [4] [6] [8]])
-           [[2] [4] [6] [8]])))
-
-  (testing "Stack vector to left - zero in the middle"
-    (is (= (sut/move-tiles-left [[2] [4] [0] [8]])
-           [[2] [4] [8] [0]])))
-
-  (testing "Stack vector to left - zeroes in the middle"
-    (is (= (sut/move-tiles-left [[2] [0] [0] [8]])
-           [[2] [8] [0] [0]]))))
