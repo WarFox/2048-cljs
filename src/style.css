@@ -2,14 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.score {
-  @apply p-2 m-2 w-48 rounded-md bg-white shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none;
-}
-
-.score-high {
-  @apply bg-gray-200;
-}
-
 @keyframes appear {
   0% {
     opacity: 0;
@@ -47,10 +39,6 @@
 }
 
 /** Tile Colour Start **/
-
-.tile-0 {
-  @apply bg-zinc-100;
-}
 
 .tile-2 {
   @apply bg-stone-100 text-stone-500;

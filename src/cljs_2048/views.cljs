@@ -26,31 +26,17 @@
        ]]}]))
 
 ;; Panel used to show Score and Best score
-(defn score-panel
-  [type value]
-  (let [[header class] (if (= type ::high-score)
-                         ["High Score" "score score-high"]
-                         ["Score" "score"])]
-    [:div {:class class
-           :aria-orientation "vertical" :aria-labelledby "mobile-menu-button"}
-     [:span {:class "block px-4 py-2 text-lg text-gray-700"}
-      [:h3 header]
-      value]]))
-
-
 (defn score
-  []
-  (let [score @(re-frame/subscribe [::subs/score])
-        high-score @(re-frame/subscribe [::subs/high-score])]
-    [:div {:class "flex flex-row" :id "score-panel"}
-     (score-panel ::score score)
-     (score-panel ::high-score high-score)]))
+  [header value]
+  [:div {:class "text-xl sm:text-2xl px-2 sm:px-4 text-center rounded-sm bg-brown-500"}
+   [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
+   [:div {:class "text-white font-bold"} value]])
 
 (defn btn-new-game
   []
-  [:button {:class "text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-            :on-click #(re-frame/dispatch [::events/start-game])}
-   "New Game"])
+  [:button {:type "button"
+            :class "text-white bg-brown-600 hover:bg-brown-800 focus:ring-4 font-medium rounded-md text-sm px-5 py-2.5 focus:outline-none"
+            :on-click #(re-frame/dispatch [::events/start-game])} "New Game"])
 
 (defn gameover-panel []
   [:div {:class "relative flex justify-center items-center z-20"}
@@ -64,15 +50,11 @@
       [:div {:class "flex flex-col justify-center items-center"}
        [btn-new-game]]]]]])
 
-(defn header
-  []
-  [:header
-   [:h2 {:class "text-4xl font-bold leading-8 sm:truncate sm:text-3xl sm:tracking-tight"} "2048"]])
-
-(defn tile-panel
+(defn tile
   "Displaying the game tile"
   [row-index col-index [value state]]
   ^{:key col-index}
+   [:div {:class (str "transition-transform duration-300 ease-in-out")} ;; TODO apply tile-position based on new position
    [:div {:class (str "text-5xl font-bold size-32 flex justify-center items-center rounded-md tile-" value
                       (cond
                         (= state :merged)
@@ -82,7 +64,7 @@
                         " tile-new"
 
                         :else "")  )}
-   (if (zero? value) "" value)])
+   (if (zero? value) "" value)]])
 
 (defn board-panel
   "Rows and columns display of current board"
@@ -96,7 +78,7 @@
         ^{:key row-index}
          (map-indexed
          (fn [col-index cell]
-           (tile-panel row-index col-index cell))
+           (tile row-index col-index cell))
          row))
       board)]))
 
@@ -104,7 +86,8 @@
   "display 4x4 grid of the game"
   []
   ;; absolute and z-0 to make the grid behind the board
-  [:div {:class "absolute z-0 grid grid-rows-4 grid-cols-4 gap-4 p-4 rounded-md" :style { :background-color "rgb(187, 173, 160)" } :id "grid-panel"}
+  [:div {:class "bg-brown-600 z-0 grid grid-rows-4 grid-cols-4 gap-4 p-4 rounded-md"
+         :id "grid-panel"}
    (map-indexed
     (fn [row-index row]
       ^{:key row-index}
@@ -112,22 +95,29 @@
        (fn [col-index cell]
          ^{:key col-index}
           ;; size-32 makes the grid cells big
-          [:div {:class "size-32 rounded-md " :style { :background-color "rgba(238, 228, 218, 0.35)" }} ])
+          [:div {:class "size-32 rounded-md bg-brown-500" } ])
        (range 4)))
     (range 4))])
 
 (defn game-panel
   []
   (let [gameover @(re-frame/subscribe [::subs/gameover])]
-    [:div {:class "container mx-auto mt-2 px-4 sm:px-0"}
+    [:div {:class "container mx-auto mt-5"}
      (when gameover
        (gameover-panel))
-     [header]
-     [btn-new-game]
-     [score]
-     [:div {:class "flex flex-row"}
-       [grid-panel]
-       [board-panel]]]))
+
+     [:div {:class "flex flex-row justify-center mt-5 rounded-md"}
+       [:div {:class "text-5xl sm:text-7xl font-bold text-stone-600"} "2048"]
+       [:div {:class "flex space-x-1 mx-4" :id "score-panel"}
+        (score ::score @(re-frame/subscribe [::subs/score]))
+        (score ::high-score @(re-frame/subscribe [::subs/high-score]))]
+
+      [:div
+       [btn-new-game]]]
+
+     [:div {:class "flex flex-row justify-center mt-8"}
+      [grid-panel]
+      [board-panel]]]))
 
 (defn main-panel
   []
