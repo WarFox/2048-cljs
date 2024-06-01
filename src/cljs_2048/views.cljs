@@ -54,7 +54,7 @@
   "Displaying the game tile"
   [row-index col-index [value state]]
   ^{:key col-index}
-   [:div {:class (str "transition-transform duration-300 ease-in-out")} ;; TODO apply tile-position based on new position
+   [:div {:class (str "transition-transform duration-300 ease-in-out tile-position-" row-index "-" col-index)} ;; TODO apply tile-position based on new position
    [:div {:class (str "text-5xl font-bold size-32 flex justify-center items-center rounded-md tile-" value
                       (cond
                         (= state :merged)
@@ -89,10 +89,10 @@
   [:div {:class "bg-brown-600 z-0 grid grid-rows-4 grid-cols-4 gap-4 p-4 rounded-md"
          :id "grid-panel"}
    (map-indexed
-    (fn [row-index row]
+    (fn [row-index _]
       ^{:key row-index}
        (map-indexed
-       (fn [col-index cell]
+       (fn [col-index _]
          ^{:key col-index}
           ;; size-32 makes the grid cells big
           [:div {:class "size-32 rounded-md bg-brown-500" } ])
