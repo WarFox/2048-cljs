@@ -109,3 +109,13 @@
   "Reverse the board"
   [board]
   (mapv #(vec (rseq %)) board))
+
+(defn equal?
+  "Check if two boards are equal or not.
+  Two boards are equals if the values of all tiles are equal,
+  we do not care about the state of the tile."
+  [board1 board2]
+  (every? true? (map =
+                     (remove keyword? (flatten board1))
+                     (remove keyword? (flatten board2)))))
+

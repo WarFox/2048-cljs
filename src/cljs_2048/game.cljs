@@ -68,6 +68,6 @@
   "Returns new board after moving in the direction. Adds random tile if board has changed"
   [board direction]
   (let [new-board ((direction movements) board)]
-    (if (= new-board board)
+    (if (b/equal? new-board board)
       new-board
       (b/random-tile new-board))))
