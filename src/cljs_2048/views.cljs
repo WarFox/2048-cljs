@@ -25,56 +25,18 @@
      [[{:keyCode 27} ;; escape
        ]]}]))
 
-;; Displaying the game tile
-(defn tile-panel
-  [row-index col-index [value state]]
-  ^{:key col-index}
-   [:div {:class (str "tile tile-" value " tile-position-" (inc row-index) "-" (inc col-index)
-                      (cond
-                        (= state :merged)
-                        " tile-merged"
-
-                        (= state :random)
-                        " tile-new"
-
-                        :else ""))}
-   (if (zero? value) "" value)])
-
 ;; Panel used to show Score and Best score
-(defn score-panel
-  [type value]
-  (let [[header class] (if (= type ::high-score)
-                         ["High Score" "score score-high"]
-                         ["Score" "score"])]
-    [:div {:class class
-           :aria-orientation "vertical" :aria-labelledby "mobile-menu-button"}
-     [:span {:class "block px-4 py-2 text-lg text-gray-700"}
-      [:h3 header]
-      value]]))
-
-(defn board-panel
-  "Rows and columns display of current board"
-  []
-  (let [board (re-frame/subscribe [::subs/board])] ;; Get the current state of the board
-    [:div.board
-     ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
-     (map-indexed
-      (fn [row-index row] ;; Each row of the board
-            ^{:key row-index}
-            [:div.row
-             (map-indexed (fn [col-index cell]
-                            (tile-panel row-index col-index cell))
-                          row)]);; Each tile of the row
-          @board)
-     [:br.clear]]))
-
 (defn score
+  [header value]
+  [:div {:class "text-xl sm:text-2xl px-2 sm:px-4 text-center rounded-sm bg-brown-500"}
+   [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
+   [:div {:class "text-white font-bold"} value]])
+
+(defn btn-new-game
   []
-  (let [score (re-frame/subscribe [::subs/score])
-        high-score (re-frame/subscribe [::subs/high-score])]
-    [:div {:class "flex flex-row-reverse"}
-     (score-panel ::high-score @high-score)
-     (score-panel ::score @score)]))
+  [:button {:type "button"
+            :class "text-white bg-brown-600 hover:bg-brown-800 focus:ring-4 font-medium rounded-md text-sm px-5 py-2.5 focus:outline-none"
+            :on-click #(re-frame/dispatch [::events/start-game])} "New Game"])
 
 (defn gameover-panel []
   [:div {:class "relative flex justify-center items-center z-20"}
@@ -85,28 +47,96 @@
        [:h1 {:role "main" :class "text-3xl dark:text-white lg:text-4xl font-semibold text-center text-gray-800"}
         "Game Over!"]]
 
-      (score)
-
       [:div {:class "flex flex-col justify-center items-center"}
-       [:button.btn-primary {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]]]]]])
+       [btn-new-game]]]]]])
+
+(defn tile
+  "Displaying the game tile"
+  [row-index col-index [value state]]
+  ^{:key col-index}
+   [:div {:class (str "transition-transform duration-300 ease-in-out tile-position-" row-index "-" col-index)} ;; TODO apply tile-position based on new position
+   [:div {:class (str "text-5xl font-bold size-32 flex justify-center items-center rounded-md tile-" value
+                      (cond
+                        (= state :merged)
+                        " tile-merged"
+
+                        (= state :random)
+                        " tile-new"
+
+                        :else "")  )}
+   (if (zero? value) "" value)]])
+
+(defn board-panel
+  "Rows and columns display of current board"
+  []
+  (let [board @(re-frame/subscribe [::subs/board])] ;; Get the current state of the board
+    ;; absolute and z-10 to make the board on top of the grid
+    [:div {:class "absolute z-10 grid grid-rows-4 grid-cols-4 gap-4 p-4" :id "board-panel"}
+     ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
+     (map-indexed
+      (fn [row-index row] ;; Each row of the board
+        ^{:key row-index}
+         (map-indexed
+         (fn [col-index cell]
+           (tile row-index col-index cell))
+         row))
+      board)]))
+
+(defn grid-panel
+  "display 4x4 grid of the game"
+  []
+  ;; absolute and z-0 to make the grid behind the board
+  [:div {:class "bg-brown-600 z-0 grid grid-rows-4 grid-cols-4 gap-4 p-4 rounded-md"
+         :id "grid-panel"}
+   (map-indexed
+    (fn [row-index _]
+      ^{:key row-index}
+       (map-indexed
+       (fn [col-index _]
+         ^{:key col-index}
+          ;; size-32 makes the grid cells big
+          [:div {:class "size-32 rounded-md bg-brown-500" } ])
+       (range 4)))
+    (range 4))])
 
 (defn game-panel
   []
-  (let [gameover (re-frame/subscribe [::subs/gameover])]
-    [:div {:class "flex flex-col items-center"}
-     (when @gameover (gameover-panel))
-     [:button.btn-primary {:on-click #(re-frame/dispatch [::events/start-game])} "New Game"]
-     [board-panel]]))
+  (let [gameover @(re-frame/subscribe [::subs/gameover])]
+    [:div {:class "container mx-auto mt-5"}
+     (when gameover
+       (gameover-panel))
 
-(defn header
-  [name]
-  [:h2.header name])
+     [:div {:class "flex flex-row justify-center mt-5 rounded-md"}
+       [:div {:class "text-5xl sm:text-7xl font-bold text-stone-600"} "2048"]
+       [:div {:class "flex space-x-1 mx-4" :id "score-panel"}
+        (score ::score @(re-frame/subscribe [::subs/score]))
+        (score ::high-score @(re-frame/subscribe [::subs/high-score]))]
+
+      [:div
+       [btn-new-game]]]
+
+     [:div {:class "flex flex-row justify-center mt-8"}
+      [grid-panel]
+      [board-panel]]
+
+     [:footer {:class "m-4"}
+      [:div {:class "mx-auto p-4 md:py-8"}
+       [:div {:class "text-sm text-gray-500 sm:text-center dark:text-gray-400"}
+        "Play using arrow keys on your browser"]
+       [:div {:class "text-sm text-gray-500 sm:text-center dark:text-gray-400"}
+        "Implemented using "
+        [:a {:href "https://day8.github.io/re-frame/re-frame/" :class "hover:underline"} "re-frame"]
+        ", "
+        [:a {:href "https://clojurescript.org/" :class "hover:underline"} "ClojureScript"]
+        ", "
+        [:a {:href "https://tailwindcss.com/" :class "hover:underline"} "tailwindcss"]
+        ", and "
+        [:a {:href "https://react.dev/" :class "hover:underline"} "React"]]
+       [:div {:class "text-sm text-gray-500 sm:text-center dark:text-gray-400"}
+        "© 2024 "
+        [:a {:href "https://deepumohan.com/" :class "hover:underline"} "Deepu Mohan Puthrote"]
+        ". All Rights Reserved."]]]]))
 
 (defn main-panel
   []
-  (let [name (re-frame/subscribe [::subs/name])]
-    [:div {:class "relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12"}
-     [:div {:class "container mx-auto"}
-     (header @name)
-     [score]]
-     [game-panel]]))
+  [game-panel])
