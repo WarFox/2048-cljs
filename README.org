@@ -1,0 +1,92 @@
+#+title: 2048-cljs
+
+2048 game implementation in [[https://clojurescript.org/][ClojureScript]] using [[https://day8.github.io/re-frame/][re-frame]], [[https://react.dev/][React]], and [[https://tailwindcss.com/][tailwindcss]]
+
+This project uses [[https://shadow-cljs.github.io/docs/UsersGuide.html][Shadow CLJS]] for development and build setup.
+
+* Core
+
+The core of this project is in =board.cljs=. The board is represented as a vector of vectors that represents rows and colums. Each cell is a vector that has a value and a state.
+
+#+begin_src clojurescript
+  (def board
+    [[[2 :random] [0] [0] [0]]
+     [[0]         [0] [0] [0]]
+     [[4]         [0] [0] [0]]
+     [[8 :merged] [0] [0] [0]]])
+#+end_src
+
+* Movements
+There are 4 movements possible in the game, move up ⬆️, move down ⬇️, move left ⬅️, and move right ➡️.
+
+Instead of implementing separate logic for each movement, all movements are based on the logic to move left, and move left is simply merges each row in the board towards left.
+
+** Move Right
+- Reverse the board
+- Move left
+- Reserve it back
+➡️ =️ ⤴️ ◀️ ⤵️
+
+** Move up
+- Rotate the board to left
+- Move left
+- Rotate it back
+⬆️ = ⬅️ ◀️ ➡️
+
+** Move down
+- Rotate the board to right
+- Move left
+- Rotate it back
+⬇️ = ➡️ ◀️ ⬅️
+
+#+begin_src clojurescript
+  (merg-left [[4 :random] [4 :merged] [0] [0]]) ;; [[8] [0] [0] [0]]
+
+  (defn move-left
+    "Move tiles to left and combine equal tiles"
+    [board]
+    (mapv b/merge-left board))
+
+  (defn move-right
+    "Move tiles to right and combine equal tiles"
+    [board]
+    (-> board
+        (b/reverse-board)
+        (move-left)
+        (b/reverse-board)))
+
+  (defn move-up
+    "Move tiles to up and combine equal tiles"
+    [board]
+    (-> board
+        (b/rotate-left)
+        (move-left)
+        (b/rotate-right)))
+
+  (defn move-down
+    "Move tiles to down and combine equal tiles"
+    [board]
+    (-> board
+        (b/rotate-right)
+        (move-left)
+        (b/rotate-left)))
+#+end_src
+
+* Development
+
+Clone the repository using git
+
+#+begin_src sh
+ git clone git@github.com:WarFox/2048-cljs
+#+end_src
+
+** Commands
+
+1. =npm run watch=
+
+   This will start =shadow-cljs= and tests on watch mode
+
+** References
+
+- https://www.youtube.com/watch?v=vI0QArPnkUc
+- https://github.com/Nathen-Smith/2048/
