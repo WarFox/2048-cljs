@@ -86,6 +86,10 @@ Clone the repository using git
 
    This will start =shadow-cljs= and tests on watch mode
 
+2. =bb dev=
+
+   This will run =npm run watch=. You need to setup [[https://babashka.org/][babashka]] for this to work.
+
 ** References
 
 - https://www.youtube.com/watch?v=vI0QArPnkUc

@@ -1,0 +1,7 @@
+{:tasks {;; Used only in local development.
+         dev        {:doc  "Runs app in dev mode. Compiles cljs, less and runs JVM app in parallel."
+                     :task (run '-watch {:parallel true})}
+         -watch      {:depends [npm:watch]}
+
+         npm:watch {:doc "Starts app and tests in watch mode"
+                    :task (shell "npm run watch") }}}
