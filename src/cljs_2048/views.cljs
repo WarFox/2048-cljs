@@ -124,4 +124,6 @@
 
 (defn main-panel
   []
-  [game-panel])
+  [:main
+   [components/github-corner]
+   [game-panel]])
