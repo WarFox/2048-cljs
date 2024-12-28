@@ -26,3 +26,13 @@
  ::gameover
  (fn [db _]
    (:gameover db)))
+
+(re-frame/reg-sub
+ ::score-changed
+ (fn [db _]
+   (:score-changed db)))
+
+(re-frame/reg-sub
+ ::high-score-changed
+ (fn [db _]
+   (:high-score-changed db)))

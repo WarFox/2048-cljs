@@ -28,10 +28,11 @@
 
 ;; Panel used to show Score and Best score
 (defn score
-  [header value]
+  [header value score-changed? score-css]
   [:div {:class "text-xl sm:text-2xl px-2 sm:px-4 text-center rounded-sm bg-brown-500"}
-   [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
-   [:div {:class "text-white font-bold"} value]])
+     [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
+   [:div {:class ["text-white font-bold" (when score-changed? score-css)]}
+      value]])
 
 (defn btn-new-game
   []
@@ -113,8 +114,14 @@
      [:div {:class "flex flex-row justify-center mt-5 rounded-md"}
        [:div {:class "text-5xl sm:text-7xl font-bold text-stone-600"} "2048"]
        [:div {:class "flex space-x-1 mx-4" :id "score-panel"}
-        (score ::score @(re-frame/subscribe [::subs/score]))
-        (score ::high-score @(re-frame/subscribe [::subs/high-score]))]
+        (score ::score
+                @(re-frame/subscribe [::subs/score])
+                @(re-frame/subscribe [::subs/score-changed])
+                "score-changed")
+        (score ::high-score
+                @(re-frame/subscribe [::subs/high-score])
+                @(re-frame/subscribe [::subs/high-score-changed])
+                "high-score-changed")]
 
       [:div
        [btn-new-game]]]
