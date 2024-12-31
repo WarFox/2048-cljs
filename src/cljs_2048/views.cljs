@@ -1,8 +1,9 @@
 (ns cljs-2048.views
   (:require
-   [cljs-2048.events :as events]
-   [cljs-2048.subs :as subs]
    [cljs-2048.components :as components]
+   [cljs-2048.events :as events]
+   [cljs-2048.game :as g]
+   [cljs-2048.subs :as subs]
    [re-frame.core :as re-frame]
    [re-pressed.core :as rp]))
 
@@ -10,16 +11,16 @@
   []
   (re-frame/dispatch
    [::rp/set-keydown-rules
-    {:event-keys [[[::events/move-left]
+    {:event-keys [[[::events/move ::g/left]
                    [{:keyCode 37}]] ;; lef-arrow
 
-                  [[::events/move-up]
+                  [[::events/move ::g/up]
                    [{:keyCode 38}]] ;; up-arrow
 
-                  [[::events/move-right]
-                   [{:keyCode 39}]] ;; lef-arrow
+                  [[::events/move ::g/right]
+                   [{:keyCode 39}]] ;; right-arrow
 
-                  [[::events/move-down]
+                  [[::events/move ::g/down]
                    [{:keyCode 40}]] ;; down-arrow
                   ]
      :clear-keys
@@ -28,10 +29,11 @@
 
 ;; Panel used to show Score and Best score
 (defn score
-  [header value]
+  [header value score-changed? score-css]
   [:div {:class "text-xl sm:text-2xl px-2 sm:px-4 text-center rounded-sm bg-brown-500"}
-   [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
-   [:div {:class "text-white font-bold"} value]])
+     [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
+   [:div {:class ["text-white font-bold" (when score-changed? score-css)]}
+      value]])
 
 (defn btn-new-game
   []
@@ -55,7 +57,10 @@
   "Displaying the game tile"
   [row-index col-index [value state]]
   ^{:key col-index}
-   [:div {:class (str "transition-transform duration-300 ease-in-out tile-position-" row-index "-" col-index)} ;; TODO apply tile-position based on new position
+   [:div {:class (str "transition-transform duration-300 ease-in-out tile-position-" row-index "-" col-index) ;; TODO apply tile-position based on new position
+          :role "gridcell"
+          :aria-label (str "Tile " value)
+          :tabindex "0"}
    [:div {:class (str "text-5xl font-bold size-32 flex justify-center items-center rounded-md tile-" value
                       (cond
                         (= state :merged)
@@ -110,8 +115,14 @@
      [:div {:class "flex flex-row justify-center mt-5 rounded-md"}
        [:div {:class "text-5xl sm:text-7xl font-bold text-stone-600"} "2048"]
        [:div {:class "flex space-x-1 mx-4" :id "score-panel"}
-        (score ::score @(re-frame/subscribe [::subs/score]))
-        (score ::high-score @(re-frame/subscribe [::subs/high-score]))]
+        (score ::score
+                @(re-frame/subscribe [::subs/score])
+                @(re-frame/subscribe [::subs/score-changed])
+                "score-changed")
+        (score ::high-score
+                @(re-frame/subscribe [::subs/high-score])
+                @(re-frame/subscribe [::subs/high-score-changed])
+                "high-score-changed")]
 
       [:div
        [btn-new-game]]]
