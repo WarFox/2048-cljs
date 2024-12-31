@@ -36,3 +36,8 @@
  ::high-score-changed
  (fn [db _]
    (:high-score-changed db)))
+
+(re-frame/reg-sub
+ ::tile-moves
+ (fn [db _]
+   (:tile-moves db)))

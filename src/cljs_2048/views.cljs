@@ -1,5 +1,6 @@
 (ns cljs-2048.views
   (:require
+   [cljs-2048.animation :as animation]
    [cljs-2048.components :as components]
    [cljs-2048.events :as events]
    [cljs-2048.game :as g]
@@ -31,9 +32,9 @@
 (defn score
   [header value score-changed? score-css]
   [:div {:class "text-xl sm:text-2xl px-2 sm:px-4 text-center rounded-sm bg-brown-500"}
-     [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
+   [:div {:class "uppercase text-sm font-bold text-brown-200"} header]
    [:div {:class ["text-white font-bold" (when score-changed? score-css)]}
-      value]])
+    value]])
 
 (defn btn-new-game
   []
@@ -56,21 +57,25 @@
 (defn tile
   "Displaying the game tile"
   [row-index col-index [value state]]
-  ^{:key col-index}
-   [:div {:class (str "transition-transform duration-300 ease-in-out tile-position-" row-index "-" col-index) ;; TODO apply tile-position based on new position
-          :role "gridcell"
-          :aria-label (str "Tile " value)
-          :tabIndex "0"}
-   [:div {:class (str "text-5xl font-bold size-32 flex justify-center items-center rounded-md tile-" value
-                      (cond
-                        (= state :merged)
-                        " tile-merged"
-
-                        (= state :random)
-                        " tile-new"
-
-                        :else "")  )}
-   (if (zero? value) "" value)]])
+  (let [tile-moves       @(re-frame/subscribe [::subs/tile-moves])
+        new-position     (get tile-moves [row-index col-index])
+        transition-style (animation/get-transition-style
+                          [row-index col-index]
+                          (if new-position
+                            new-position
+                            [row-index col-index]))]
+    ^{:key (str row-index col-index)} ;; unique identifier
+    [:div {:class ["tile relative"
+                   (if new-position "tile-slide z-30" "z-20")
+                   (when (= state :merged) "tile-merged")
+                   (when (= state :random) "tile-new")]
+           :role "gridcell"
+           :aria-label (str "Tile " value)
+           :tabIndex "0"
+           :style transition-style}
+    [:div {:class ["flex justify-center items-center rounded-md size-28" (str "tile-" value)]}
+     (when-not (zero? value)
+       [:span {:class "text-5xl font-bold"} value])]]))
 
 (defn board-panel
   "Rows and columns display of current board"
@@ -81,8 +86,7 @@
      ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
      (map-indexed
       (fn [row-index row] ;; Each row of the board
-        ^{:key row-index}
-         (map-indexed
+        (map-indexed
          (fn [col-index cell]
            (tile row-index col-index cell))
          row))
@@ -91,17 +95,17 @@
 (defn grid-panel
   "display 4x4 grid of the game"
   []
-  ;; absolute and z-0 to make the grid behind the board
-  [:div {:class "bg-brown-600 z-0 grid grid-rows-4 grid-cols-4 gap-4 p-4 rounded-md"
+  ;; relative and z-0 to make the grid behind the board
+  [:div {:class "relative z-0 bg-brown-600 grid grid-rows-4 grid-cols-4 gap-4 p-4 rounded-md"
          :id "grid-panel"}
    (map-indexed
     (fn [row-index _]
       ^{:key row-index}
-       (map-indexed
+      (map-indexed
        (fn [col-index _]
          ^{:key col-index}
-          ;; size-32 makes the grid cells big
-          [:div {:class "size-32 rounded-md bg-brown-500" } ])
+          ;; size-28 makes the grid cells big
+         [:div {:class "size-28 rounded-md bg-brown-500"}])
        (range 4)))
     (range 4))])
 
@@ -113,16 +117,16 @@
        (gameover-panel))
 
      [:div {:class "flex flex-row justify-center mt-5 rounded-md"}
-       [:div {:class "text-5xl sm:text-7xl font-bold text-stone-600"} "2048"]
-       [:div {:class "flex space-x-1 mx-4" :id "score-panel"}
-        (score ::score
-                @(re-frame/subscribe [::subs/score])
-                @(re-frame/subscribe [::subs/score-changed])
-                "score-changed")
-        (score ::high-score
-                @(re-frame/subscribe [::subs/high-score])
-                @(re-frame/subscribe [::subs/high-score-changed])
-                "high-score-changed")]
+      [:div {:class "text-5xl sm:text-7xl font-bold text-stone-600"} "2048"]
+      [:div {:class "flex space-x-1 mx-4" :id "score-panel"}
+       (score ::score
+              @(re-frame/subscribe [::subs/score])
+              @(re-frame/subscribe [::subs/score-changed])
+              "score-changed")
+       (score ::high-score
+              @(re-frame/subscribe [::subs/high-score])
+              @(re-frame/subscribe [::subs/high-score-changed])
+              "high-score-changed")]
 
       [:div
        [btn-new-game]]]
