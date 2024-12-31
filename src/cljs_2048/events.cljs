@@ -7,20 +7,6 @@
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [re-frame.core :as re-frame]))
 
-(defn check-gameover
-  "Dispatch gameover if gameover. Returns the board"
-  [board]
-  (when (g/gameover? board)
-    (re-frame/dispatch [::game-events/gameover]))
-  board)
-
-(defn- move
-  "Make a move in the direction and check gameover"
-  [board direction]
-  (-> board
-      (g/move direction)
-      (check-gameover)))
-
 (re-frame/reg-event-db
  ::initialize-db
  (fn-traced
@@ -34,32 +20,13 @@
          :gameover false
          :score 0))
 
-(defn move-up
-  [{:keys [board] :as db} [_ _]]
-  (assoc db
-         :board (move board ::g/up)))
-
-(defn move-down
-  [{:keys [board] :as db} [_ _]]
-  (assoc db
-         :board (move board ::g/down)))
-
-(defn move-right
-  [{:keys [board] :as db} [_ _]]
-  (assoc db
-         :board (move board ::g/right)))
-
-(defn move-left
-  [{:keys [board] :as db} [_ _]]
-  (assoc db
-         :board (move board ::g/left)))
-
 (re-frame/reg-event-db ::start-game start-game)
 
-(re-frame/reg-event-db ::move-up move-up)
+(defn move
+  [{:keys [db]} [_ direction]]
+  (let [new-board (g/move (:board db) direction)]
+    {:db (assoc db
+                :board new-board)
+     :fx [(when (g/gameover? new-board) [:dispatch [::game-events/gameover]])]}))
 
-(re-frame/reg-event-db ::move-down move-down)
-
-(re-frame/reg-event-db ::move-right move-right)
-
-(re-frame/reg-event-db ::move-left move-left)
+(re-frame/reg-event-fx ::move move)

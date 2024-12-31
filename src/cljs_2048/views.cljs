@@ -1,8 +1,9 @@
 (ns cljs-2048.views
   (:require
-   [cljs-2048.events :as events]
-   [cljs-2048.subs :as subs]
    [cljs-2048.components :as components]
+   [cljs-2048.events :as events]
+   [cljs-2048.game :as g]
+   [cljs-2048.subs :as subs]
    [re-frame.core :as re-frame]
    [re-pressed.core :as rp]))
 
@@ -10,16 +11,16 @@
   []
   (re-frame/dispatch
    [::rp/set-keydown-rules
-    {:event-keys [[[::events/move-left]
+    {:event-keys [[[::events/move ::g/left]
                    [{:keyCode 37}]] ;; lef-arrow
 
-                  [[::events/move-up]
+                  [[::events/move ::g/up]
                    [{:keyCode 38}]] ;; up-arrow
 
-                  [[::events/move-right]
-                   [{:keyCode 39}]] ;; lef-arrow
+                  [[::events/move ::g/right]
+                   [{:keyCode 39}]] ;; right-arrow
 
-                  [[::events/move-down]
+                  [[::events/move ::g/down]
                    [{:keyCode 40}]] ;; down-arrow
                   ]
      :clear-keys
