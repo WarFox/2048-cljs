@@ -163,3 +163,9 @@
     animation: octocat-wave 560ms ease-in-out;
   }
 }
+
+/* Tile slide animation */
+.tile-slide {
+  transition: transform 200ms ease;
+  transform: translate(var(--move-x), var(--move-y));
+}

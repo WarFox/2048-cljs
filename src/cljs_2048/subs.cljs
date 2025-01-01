@@ -36,3 +36,13 @@
  ::high-score-changed
  (fn [db _]
    (:high-score-changed db)))
+
+(re-frame/reg-sub
+ ::direction
+ (fn [db _]
+   (:direction db)))
+
+(re-frame/reg-sub
+ ::sliding?
+ (fn [db _]
+   (:sliding? db)))
