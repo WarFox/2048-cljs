@@ -7,4 +7,7 @@
   {:name "2048"
    :score 0
    :high-score (ls/get-high-score)
+   :sliding? false
+   :score-changed false
+   :high-score-changed false
    :board board/initial-board})

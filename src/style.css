@@ -164,22 +164,8 @@
   }
 }
 
-/** New  **/
-
-/** tile slide animation **/
-/*
-@keyframes slide {
-  0% {
-    transform: translate(0, 0);
-  }
-
-  100% {
-    transform: translate(var(--move-x), var(--move-y));
-  }
-} */
-
+/* Tile slide animation */
 .tile-slide {
-  /* animation: slide 500ms ease-in; */
-  transition: transform 500ms ease;
+  transition: transform 200ms ease;
   transform: translate(var(--move-x), var(--move-y));
 }

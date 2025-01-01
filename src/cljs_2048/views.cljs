@@ -56,31 +56,26 @@
 
 (defn tile
   "Displaying the game tile"
-  [row-index col-index [value state]]
-  (let [tile-moves       @(re-frame/subscribe [::subs/tile-moves])
-        new-position     (get tile-moves [row-index col-index])
-        transition-style (animation/get-transition-style
-                          [row-index col-index]
-                          (if new-position
-                            new-position
-                            [row-index col-index]))]
-    ^{:key (str row-index col-index)} ;; unique identifier
-    [:div {:class ["tile relative"
-                   (if new-position "tile-slide z-30" "z-20")
+  [sliding? direction row-index col-index [value state]]
+  ^{:key (str row-index col-index)} ;; unique identifier
+    [:div {:class ["tile relative z-20"
+                   (when sliding? "tile-slide")
                    (when (= state :merged) "tile-merged")
                    (when (= state :random) "tile-new")]
            :role "gridcell"
            :aria-label (str "Tile " value)
            :tabIndex "0"
-           :style transition-style}
+           :style (when sliding? (animation/get-transition-style [row-index col-index] direction))}
     [:div {:class ["flex justify-center items-center rounded-md size-28" (str "tile-" value)]}
      (when-not (zero? value)
-       [:span {:class "text-5xl font-bold"} value])]]))
+       [:span {:class "text-5xl font-bold"} value])]])
 
 (defn board-panel
   "Rows and columns display of current board"
   []
-  (let [board @(re-frame/subscribe [::subs/board])] ;; Get the current state of the board
+  (let [board @(re-frame/subscribe [::subs/board]) ;; Get the current state of the board
+        sliding? @(re-frame/subscribe [::subs/sliding?])
+        direction @(re-frame/subscribe [::subs/direction])]
     ;; absolute and z-10 to make the board on top of the grid
     [:div {:class "absolute z-10 grid grid-rows-4 grid-cols-4 gap-4 p-4" :id "board-panel"}
      ;; [:pre (with-out-str (cljs.pprint/pprint @board))] ;; print the board in page for debugging
@@ -88,7 +83,7 @@
       (fn [row-index row] ;; Each row of the board
         (map-indexed
          (fn [col-index cell]
-           (tile row-index col-index cell))
+           (tile sliding? direction row-index col-index cell))
          row))
       board)]))
 

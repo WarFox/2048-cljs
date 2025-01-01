@@ -38,6 +38,11 @@
    (:high-score-changed db)))
 
 (re-frame/reg-sub
- ::tile-moves
+ ::direction
  (fn [db _]
-   (:tile-moves db)))
+   (:direction db)))
+
+(re-frame/reg-sub
+ ::sliding?
+ (fn [db _]
+   (:sliding? db)))

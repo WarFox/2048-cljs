@@ -1,99 +1,38 @@
 (ns cljs-2048.animation-test
   (:require [cljs.test :refer-macros [deftest testing is]]
+            [cljs-2048.game :as g]
             [cljs-2048.animation :as animation]))
 
-(deftest calculate-moves-test
-  (testing "calculates horizontal moves"
-    (testing "single tile moving right"
-      (let [old-board [[[2] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-            new-board [[[0] [0] [0] [2]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-            expected {[0 0] [0 3]}]
-        (is (= expected (animation/calculate-moves old-board new-board)))))
+(deftest get-transition-style-test
+  (testing "calculates transition style 0 0"
+    (let [cell [0 0]]
+      (is (= (animation/get-transition-style cell ::g/up)
+             {"--move-x" "0em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/left)
+             {"--move-x" "0em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/right)
+             {"--move-x" "24em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/down)
+             {"--move-x" "0em" "--move-y" "24em"}))))
 
-    (testing "multiple tiles moving right"
-      (let [old-board [[[2] [4] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-            new-board [[[0] [0] [2] [4]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-            expected {[0 0] [0 2]
-                     [0 1] [0 3]}]
-        (is (= expected (animation/calculate-moves old-board new-board))))))
+  (testing "calculates transition style 3 3"
+    (let [cell [3 3]]
+      (is (= (animation/get-transition-style cell ::g/up)
+             {"--move-x" "0em" "--move-y" "-24em"}))
+      (is (= (animation/get-transition-style cell ::g/left)
+             {"--move-x" "-24em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/right)
+             {"--move-x" "0em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/down)
+             {"--move-x" "0em" "--move-y" "0em"}))))
 
-  (testing "calculates vertical moves"
-    (testing "single tile moving down"
-      (let [old-board [[[2] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-            new-board [[[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[2] [0] [0] [0]]]
-            expected {[0 0] [3 0]}]
-        (is (= expected (animation/calculate-moves old-board new-board)))))
-
-    (testing "multiple tiles moving down"
-      (let [old-board [[[2] [0] [0] [0]]
-                      [[4] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-            new-board [[[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[2] [0] [0] [0]]
-                      [[4] [0] [0] [0]]]
-            expected {[0 0] [2 0]
-                     [1 0] [3 0]}]
-        (is (= expected (animation/calculate-moves old-board new-board))))))
-
-  (testing "handles merging tiles"
-    (let [old-board [[[2] [2 :random] [0] [0]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [0]]]
-          new-board [[[0] [0] [0] [4 :merged]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [0]]]
-          expected {[0 0] [0 3]
-                   [0 1] [0 3]}]  ; Both tiles should move to the same position
-      (is (= expected (animation/calculate-moves old-board new-board)))))
-
-(testing "handles merging and moving tiles"
-    (let [old-board [[[2] [2] [0] [0]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [0]]
-                    [[4] [0] [0] [0]]]
-          new-board [[[0] [0] [0] [4 :merged]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [0]]
-                    [[0] [0] [0] [4]]]
-          expected {[0 0] [0 3]
-                   [0 1] [0 3]
-                   [3 0] [3 3] }]  ; Both tiles should move to the same position
-      (is (= expected (animation/calculate-moves old-board new-board)))))
-
-  (testing "handles no movement"
-    (let [board [[[2] [4] [0] [0]]
-                [[0] [0] [0] [0]]
-                [[0] [0] [0] [0]]
-                [[0] [0] [0] [0]]]
-          expected {}]
-      (is (= expected (animation/calculate-moves board board)))))
-
-  (testing "handles empty board"
-    (let [empty-board [[[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]
-                      [[0] [0] [0] [0]]]
-          expected {}]
-      (is (= expected (animation/calculate-moves empty-board empty-board))))))
+  (testing "calculates transition style 2 1"
+    (let [cell [2 1]]
+      (is (= (animation/get-transition-style cell ::g/up)
+             {"--move-x" "0em" "--move-y" "-16em"}))
+      (is (= (animation/get-transition-style cell ::g/left)
+             {"--move-x" "-8em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/right)
+             {"--move-x" "16em" "--move-y" "0em"}))
+      (is (= (animation/get-transition-style cell ::g/down)
+             {"--move-x" "0em" "--move-y" "8em"})))))

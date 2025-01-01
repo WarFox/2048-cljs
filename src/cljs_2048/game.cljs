@@ -70,7 +70,7 @@
   (->> board
        (mapcat (fn [row]
                  (filter (fn [tile]
-                          (= :merged (second tile))) row)))
+                           (= :merged (second tile))) row)))
        (map first)
        (reduce + 0)))
 
@@ -79,5 +79,5 @@
   [board direction]
   (let [new-board ((get movements direction) board)]
     (if (b/equal? new-board board)
-      new-board
+      board
       (b/random-tile new-board))))
