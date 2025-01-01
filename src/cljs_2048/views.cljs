@@ -60,7 +60,7 @@
    [:div {:class (str "transition-transform duration-300 ease-in-out tile-position-" row-index "-" col-index) ;; TODO apply tile-position based on new position
           :role "gridcell"
           :aria-label (str "Tile " value)
-          :tabindex "0"}
+          :tabIndex "0"}
    [:div {:class (str "text-5xl font-bold size-32 flex justify-center items-center rounded-md tile-" value
                       (cond
                         (= state :merged)

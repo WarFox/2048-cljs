@@ -64,10 +64,20 @@
    ::up    move-up
    ::down  move-down})
 
+(defn move-score
+  "Returns score after moving. Score is sum of :merged tiles"
+  [board]
+  (->> board
+       (mapcat (fn [row]
+                 (filter (fn [tile]
+                          (= :merged (second tile))) row)))
+       (map first)
+       (reduce + 0)))
+
 (defn move
   "Returns new board after moving in the direction. Adds random tile if board has changed"
   [board direction]
-  (let [new-board ((direction movements) board)]
+  (let [new-board ((get movements direction) board)]
     (if (b/equal? new-board board)
       new-board
       (b/random-tile new-board))))
