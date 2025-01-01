@@ -173,3 +173,15 @@
         (testing "random tile is added"
           (is (= (sut/move board ::sut/up)
                  ::random-tile-added)))))))
+
+(deftest move-score-test
+  (is (= (sut/move-score [[[16 :merged] [0] [0] [0]]
+                          [[2] [0] [0] [0]]
+                          [[4 :merged] [0] [0] [0]]
+                          [[4 :merged] [0] [0] [0]]]) 24))
+  (is (= (sut/move-score test-board-2) 0))
+
+  (is (= (sut/move-score [[[2] [4] [2] [2]]
+                          [[4] [32] [8] [4]]
+                          [[4] [4] [2] [8]]
+                          [[4] [4] [16] [2]]]) 0)))

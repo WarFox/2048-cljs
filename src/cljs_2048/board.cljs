@@ -1,7 +1,4 @@
-(ns cljs-2048.board
-  (:require
-   [cljs-2048.game-events :as game-events]
-   [re-frame.core :as re-frame]))
+(ns cljs-2048.board)
 
 (def rows-count 4)
 (def columns-count 4)
@@ -86,13 +83,12 @@
                                 (nil? prev)
                                 [acc current]
 
-                                ;; If equal, merge and add to accumulator, set nil as previous
+                                ;; If equal, merge and append to accumulator, set nil as previous
                                 (= prev current)
                                 (let [sum (+ prev current)]
-                                  (re-frame/dispatch [::game-events/add-score sum])
                                   [(conj acc [sum :merged]) nil])
 
-                                ;; If not equal, add previous to accumulator and current element as previous
+                                ;; If not equal, append previous to accumulator and current element as previous
                                 :else
                                 [(conj acc [prev]) current]))
 
@@ -118,4 +114,3 @@
   (every? true? (map =
                      (remove keyword? (flatten board1))
                      (remove keyword? (flatten board2)))))
-
